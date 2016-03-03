@@ -1,0 +1,375 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Proof of weak normalization property in STLC | Don&#39;t Panic!</title>
+  <meta name="author" content="Farseer He">
+  
+  <meta name="description" content="动机十多天前我在software fundation的练习中过了一遍有关STLC的weak normalization性质的证明。当时有些任务心态，想着把上面留的坑填完就完事了，好多大段的引理证明不仅没仔细看，也没有细想引理的用处。
+前几天无意中翻到了王垠的一篇老文，于是试图回忆这个定理的证明过程，却发现脑中是空白的，无奈翻出之前的形式化证明从头屡一屡。
+由于我的表述能力的限制，以及我对此证明本质的粗浅认识，这将很难成为一篇好的科普文。另外此文只涉及到关于此性质的核心证明(very informal)，其中可能涉及到许多前文已经证明过的引理，如果想了解完整的证明，请参照software fundation或相关文献。">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Proof of weak normalization property in STLC"/>
+  <meta property="og:site_name" content="Don&#39;t Panic!"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Don&#39;t Panic!" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	ga('create', 'UA-40313156-5', 'auto');
+	ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Don&#39;t Panic!</a></h1>
+  <h2><a href="/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-04-23T16:00:00.000Z"><a href="/2015/04/24/proof-of-normalization-property-in-stlc/">2015-04-24</a></time>
+      
+      
+  
+    <h1 class="title">Proof of weak normalization property in STLC</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><p>十多天前我在software fundation的练习中过了一遍有关STLC的weak normalization性质的<a href="https://github.com/blindFS/Software-Foundations-Solutions/blob/master/Norm.v" target="_blank" rel="external">证明</a>。<br>当时有些任务心态，想着把上面留的坑填完就完事了，好多大段的引理证明不仅没仔细看，也没有细想引理的用处。</p>
+<p>前几天无意中翻到了王垠的<a href="http://www.yinwang.org/blog-cn/2013/04/26/reason-and-proof/" target="_blank" rel="external">一篇老文</a>，于是试图回忆这个定理的证明过程，却发现脑中是空白的，无奈翻出之前的形式化证明从头屡一屡。</p>
+<p>由于我的表述能力的限制，以及我对此证明本质的粗浅认识，这将很难成为一篇好的科普文。另外此文只涉及到关于此性质的核心证明(very informal)，其中可能涉及到许多前文已经证明过的引理，如果想了解完整的证明，请参照software fundation或相关文献。</p>
+<a id="more"></a>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><h3 id="什么是weak-normalization"><a href="#什么是weak-normalization" class="headerlink" title="什么是weak normalization ?"></a>什么是weak normalization ?</h3><p>简单来说，在STLC中的良构(指的是well-typed)表达式，在$\beta-reduction$的操作语义下，能够停机(halts)。<br>此处停机指的是无法继续reduction，那么根据STLC的progress特性，即：任何非value的良构表达式都能够继续执行reduction，可以得到normalization特性的另一个描述。</p>
+<p>任何STLC中的well-typed-term，可以经过有限步骤的reduction操作，得到一个value。此处略去关于value的解释若干…</p>
+<p>举个简单的例子，$(\lambda x. (x x))(\lambda x. (x x))$ 这个表达式在不带类型的lambda calculus中是良构的，它执行一步reduction之后得到它本身，于是它不会停机。然而在STLC中，我们无法给它加上合适的类型，于是在STLC中，我们找不到对应的良构的表达式。至于为什么无法加上合适类型，此处省略STLC的类型推导规则若干…</p>
+<p>如果使用Coq来描述，就是这样:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Definition halts  (t:tm) : Prop :=  exists t&apos;, t ==&gt;* t&apos; /\  value t&apos;.</span><br><span class="line">Theorem normalization : forall t T, has_type empty t T -&gt; halts t.</span><br></pre></td></tr></table></figure>
+<h3 id="关于良构表达式的一个加强性质"><a href="#关于良构表达式的一个加强性质" class="headerlink" title="关于良构表达式的一个加强性质"></a>关于良构表达式的一个加强性质</h3><p>我们现在只关心最简单的STLC，不包含任何不必要的语法，如if，pair… 这些扩充的语法并不会影响证明的本质。<br>看过上文提到的形式化证明的同志应该知道，Coq中对此定理证明的最关键步骤就是构造一个比has_type更强的有关表达式和类型的关系R。</p>
+<p>要证明一个表达式t和一个类型T之间具有关系R，我们需要如下条件</p>
+<ol>
+<li>t是closed，即没有自由变量, 这很自然，应为具有自由变量的表达式是不完整的，我们并不关心</li>
+<li>根据原有的类型推导系统，我们可以得出t具有类型T, 这正是之前我们关于良构的定义(has_type)，后面我们将证明，仅通过良构的假设，我们就能得到对应的R关系的证明</li>
+<li>t halts</li>
+<li>R关系不会被函数作用操作所破坏<ol>
+<li>如果T是STLC语言中定义的基本类型，则没有任何多余的约束</li>
+<li>如果T是一种函数类型，不妨设为 <code>T1 -&gt; T2</code> 则t作用在任何与T1满足关系R的表达式t’上之后所得到的表达式t t’将与T2具有关系R</li>
+</ol>
+</li>
+</ol>
+<p>在Coq中，这种关系在通过inductive definition声明的时候会遇到问题(strict positivity requirement)，但是可以通过一个递归函数来处理，这是很有意思的一种方式，但是跟证明本身没有太大的联系。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Fixpoint R (T:ty) (t:tm) &#123;struct T&#125; : Prop :=</span><br><span class="line">  has_type empty t T /\ halts t /\</span><br><span class="line">    (match T with</span><br><span class="line">       | TBool  =&gt; True</span><br><span class="line">       | TArrow T1 T2 =&gt; (forall s, R T1 s -&gt; R T2 (tapp t s))</span><br></pre></td></tr></table></figure>
+<p>前三个条件可以综合理解为t在有限步骤的归约之后可以得到一个具有类型T的value</p>
+<h3 id="Context-amp-Env"><a href="#Context-amp-Env" class="headerlink" title="Context &amp; Env"></a>Context &amp; Env</h3><ul>
+<li>context 是一组id(变量)与类型的映射, [(id, type)]，用于类型推导</li>
+<li>env 则是一组id与value的映射，[(id, term)], 用于归约操作，将表达式中的变量替换为value，替换操作从左往右进行</li>
+</ul>
+<p>如果一个env e和一个context c满足：</p>
+<ol>
+<li>每一组对应位置的id相同</li>
+<li>在每一组对应位置上，e中的term v和c中的type T具有关系R</li>
+</ol>
+<p>就说e是c的一个实例。</p>
+<ul>
+<li>msubst env t操作，通过从左往右的顺序(有重复id时以最左边的value替换)，依次以env中的value替换表达式t中对应的自由变量</li>
+<li>mextend empty context操作，通过从右往左的顺序(重复id时，最左边的类型将其它覆盖)扩增</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Fixpoint msubst (ss:env) (t:tm) &#123;struct ss&#125; : tm :=</span><br><span class="line">match ss with</span><br><span class="line">| nil =&gt; t</span><br><span class="line">| ((x,s)::ss&apos;) =&gt; msubst ss&apos; ([x:=s]t)</span><br><span class="line">end.</span><br></pre></td></tr></table></figure>
+<h2 id="Proof"><a href="#Proof" class="headerlink" title="Proof"></a>Proof</h2><p>有了以上的概念，下面我们通过top-down的方式来寻找Norm性质的证明。</p>
+<ol>
+<li>要证明Norm，我们需要证明对于任意具有类型T的闭合表达式t终止</li>
+<li>因为如果t和T具有关系R，则t终止(R蕴含的性质之一)，于是我们可以通过证明“任意具有类型T的闭合表达式t满足t和T具有关系R”来证明原命题</li>
+<li>于是我们需要一个引理，它以良构(has_type)作为前提，以关系R作为结论</li>
+</ol>
+<h3 id="Lemma-msubst-R"><a href="#Lemma-msubst-R" class="headerlink" title="Lemma msubst_R"></a>Lemma msubst_R</h3><p>如果根据某context c(此时不要求t为closed)我们可以得出t具有类型T，并且env e为c的一个实例，则(msubst e t)和T具有关系R。</p>
+<p><code>Lemma msubst_R : forall c e t T, has_type (mextend empty c) t T -&gt; instantiation c e -&gt; R T (msubst e t).</code></p>
+<p>要证明上述引理，我们对第一个条件作归纳，要得到 <code>has_type (mextend empty c) t T</code>, 根据has_type的归纳定义有如下3种情况：</p>
+<ol>
+<li>t是一个变量，设为x，x在c中有定义，且c给x定义的最新的类型为T<ol>
+<li>根据e是c的一个实例，那么x在e中必然也有定义，考虑x在e中最靠左的出现时对应的value v，根据替换的顺序，有 <code>msubst e t = v</code></li>
+<li>那么剩下来只需证明 <code>R T v</code>，由于c给x定义的最新的类型T取决于x在c中最靠左的出现(根据mextend覆盖的顺序)</li>
+<li>e是c的实例，于是x在e中最左出现的位置与x在c中最左出现的位置是相同的(根据实例的性质1)，于是v与T是位置对应的，于是有 <code>R T v</code> (根据实例的性质2)，于是第一种情况成立</li>
+</ol>
+</li>
+<li>t是一个lambda函数，设为$\lambda x:T1. t’$, 根据c和x具有T1，得出t’具有类型T2，<code>T = T1 -&gt; T2</code><ol>
+<li>令e’为e中去掉所有关于x的项后得到的env，则 t’’ = $\lambda x:T1. (msubst\ e’\ t’)$与T具有关系R (待证明)</li>
+<li>推论1 :: t’’ 是closed<ol>
+<li>因为所有t’中的自由变量都在c中出现，否则无法得出类型T2，进而所有自由变量在e中出现</li>
+<li>e是c的实例，e中的value都是closed，否则无法对其进行类型推导，没有类型就得不到R关系，与实例的性质2矛盾</li>
+<li>于是将t’中的所有自由变量替换为closed value之后得到的还是closed-term</li>
+</ol>
+</li>
+<li>推论2 :: t’’具有类型T<ol>
+<li>由于所有替换操作都是在对应的类型假设下进行的，于是替换操作不会更改整个表达式的类型，具体证明细节自行脑补…</li>
+</ol>
+</li>
+<li>要证明1，根据R所需的4个条件，我们只剩3和4<ol>
+<li>3是不言自明的，所有的lambda函数都视作value，value都是终止的</li>
+<li>条件4是说，对于任意满足<code>R T1 s</code>的s，<code>R T2 (t&#39;&#39; s)</code></li>
+</ol>
+</li>
+<li>证明最后一个条件<ol>
+<li>根据R的1-3有，s经过有限步的归约后得到一个具有类型T1的value v，显然<code>R T1 v</code>成立</li>
+<li>令<code>t1 = (msubst e&#39; [x := v]t&#39;)</code>，即t’中先将x替换成v，再进行e’(不含x)中的替换，通过归纳假设(对类型推导进行的归纳，于是可以在T2上应用msubst_R)，容易证明<code>R T2 t1</code></li>
+<li>由于s归约得到v，则容易得到(t’’ s)归约得到(t’’ v)，进而归约得到t1</li>
+<li>根据R的条件4，直觉上可以感觉到归约操作的前后R的性质保持不变，假设这个性质满足(稍后通过step_preserves_R’/multistep_preserves_R’加以说明)。那么根据<code>R T2 t1</code>可以得到<code>R T2 (t&#39;&#39; s)</code>，这样第二种情况的证明就完成了</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>t是一个函数调用，t = t1 t2, t1具有类型 T1 -&gt; T2, t2具有类型T1，<ol>
+<li>推论1 :: <code>msubst e t = (msubst e t1) (msubst e t2)</code>，根据替换操作的语义和自由变量的定义很容易脑补</li>
+<li>根据两个归纳假设容易得到<code>R (T1 -&gt; T2) (msubst e t1)</code>, <code>R T1 (msubst e t2)</code></li>
+<li>根据R的条件4，有<code>R T2 (msubst e t1) (msubst e t2)</code>，即<code>R T2 (msubst e t)</code>，亦即结论，于是第三种情况成立</li>
+</ol>
+</li>
+</ol>
+<p>至此，要得到引理msubst_R，唯一需要继续证明的就是：归约前后R关系的一致性，即下一条引理。</p>
+<h3 id="Lemma-preserves-R’"><a href="#Lemma-preserves-R’" class="headerlink" title="Lemma preserves_R’"></a>Lemma preserves_R’</h3><p>如果t具有类型T，且t单步归约到t’，t’与T具有关系R，则t与T具有关系R</p>
+<p><code>Lemma step_preserves_R&#39; : forall T t t&#39;, has_type empty t T -&gt; (t ==&gt; t&#39;) -&gt; R T t&#39; -&gt; R T t.</code></p>
+<p>对T作归纳，得到如下几种情况：</p>
+<ol>
+<li>T是基本类型，R的条件4不作附加约束，于是只需证明t终止，应为t’与T具有关系R，于是t’终止，从而t也终止(步骤+1)</li>
+<li>T是函数类型，<code>T = T1 -&gt; T2</code>，终止属性同样得到满足，只需对条件4加以证明，即对于任意的s满足<code>R T1 s</code>， 有<code>R T2 (t s)</code><ol>
+<li>根据<code>R T t&#39;</code>的条件4得到对于任意s满足<code>R T1 s</code>，有<code>R T2 (t&#39; s)</code></li>
+<li>又(t s)单步归约至(t’ s), 通过归纳假设(在类型T2上)容易得到，<code>R T1 s</code> -&gt; <code>R T2 (t&#39; s)</code> -&gt; <code>R T2 (t s)</code></li>
+</ol>
+</li>
+</ol>
+<p>得到了单步的属性之后，很容易结合preservation属性(归约后的类型不变)脑补出下面的多步引理：</p>
+<p><code>Lemma multistep_preserves_R&#39; : forall T t t&#39;, has_type empty t T -&gt; (t ==&gt;* t&#39;) -&gt; R T t&#39; -&gt; R T t.</code></p>
+<p>根据这个引理，便可以证明msubst_R (见证明步骤2.5.4)</p>
+<h3 id="Finally"><a href="#Finally" class="headerlink" title="Finally"></a>Finally</h3><p>有了msubst_R之后，通过取c和e为空list，便能得出“任意具有类型T的闭合表达式t满足<code>R T t</code>”这个结论，<br>从而，STLC的Norm属性得到了最终的证明。</p>
+<p>证明的思路是围绕对类型作归纳展开的，整个思路是将初始的类型T一层层地剥开，直到基础类型。</p>
+<p>事实上STLC更强的性质，即strong normalization，说的是任何良构表达式必定停机，它的证明留到以后有时间再读吧…</p>
+<p>写困了，就这样吧…</p>
+<h2 id="Referrence"><a href="#Referrence" class="headerlink" title="Referrence"></a>Referrence</h2><ul>
+<li><a href="http://www.seas.upenn.edu/~bcpierce/sf/current/Norm.html" target="_blank" rel="external">http://www.seas.upenn.edu/~bcpierce/sf/current/Norm.html</a></li>
+<li>Tait, William W. “Intensional interpretations of functionals of finite type I.” The Journal of Symbolic Logic 32.02 (1967): 198-212.</li>
+</ul>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/PLT/">PLT</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/tags/Coq/">Coq</a>, <a href="/tags/logic/">logic</a>, <a href="/tags/lambda-calculus/">lambda-calculus</a>
+  </div>
+
+        
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+    
+      <a class="addthis_button_pinterest_pinit" pi:pinit:layout="horizontal"></a>
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">Comments</h1>
+
+  
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+  
+</section>
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="q" value="site:farseer.cn">
+  </form>
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/PLT/">PLT</a><small>4</small></li>
+  
+    <li><a href="/categories/PRML/">PRML</a><small>4</small></li>
+  
+    <li><a href="/categories/TCS/">TCS</a><small>2</small></li>
+  
+    <li><a href="/categories/fun/">fun</a><small>4</small></li>
+  
+    <li><a href="/categories/notes/">notes</a><small>1</small></li>
+  
+    <li><a href="/categories/tips/">tips</a><small>2</small></li>
+  
+    <li><a href="/categories/tweak/">tweak</a><small>3</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/Coq/">Coq</a><small>1</small></li>
+  
+    <li><a href="/tags/EVA/">EVA</a><small>1</small></li>
+  
+    <li><a href="/tags/Information-theory/">Information theory</a><small>2</small></li>
+  
+    <li><a href="/tags/art/">art</a><small>1</small></li>
+  
+    <li><a href="/tags/distributed/">distributed</a><small>2</small></li>
+  
+    <li><a href="/tags/game/">game</a><small>1</small></li>
+  
+    <li><a href="/tags/haskell/">haskell</a><small>2</small></li>
+  
+    <li><a href="/tags/javascript/">javascript</a><small>2</small></li>
+  
+    <li><a href="/tags/lambda-calculus/">lambda-calculus</a><small>2</small></li>
+  
+    <li><a href="/tags/logic/">logic</a><small>2</small></li>
+  
+    <li><a href="/tags/math/">math</a><small>4</small></li>
+  
+    <li><a href="/tags/ml/">ml</a><small>4</small></li>
+  
+    <li><a href="/tags/paper/">paper</a><small>2</small></li>
+  
+    <li><a href="/tags/physics/">physics</a><small>1</small></li>
+  
+    <li><a href="/tags/scala/">scala</a><small>1</small></li>
+  
+    <li><a href="/tags/shell/">shell</a><small>1</small></li>
+  
+    <li><a href="/tags/spark/">spark</a><small>1</small></li>
+  
+    <li><a href="/tags/vim/">vim</a><small>2</small></li>
+  
+    <li><a href="/tags/vimperator/">vimperator</a><small>3</small></li>
+  
+    <li><a href="/tags/zsh/">zsh</a><small>1</small></li>
+  
+    <li><a href="/tags/ツッコミ/">ツッコミ</a><small>1</small></li>
+  
+    <li><a href="/tags/中二病/">中二病</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2016 Farseer He
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+<script type="text/javascript">
+var disqus_shortname = 'githubio';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+<!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Shannon–Hartley theorem | Don&#39;t Panic!</title>
+  <meta name="author" content="Farseer He">
+  
+  <meta name="description" content="有噪信道编码定理只适用于离散的数字信道，若要将其应用于真实的物理信道还需要费一番功夫。当然其结果就是著名的香农极限。
+
+对于某个物理信道，若：
+
+其带宽为 $W$.
+其噪声为功率谱密度为 $N_0$ 的高斯白噪声。
+信号的平均功率为 $P$.
+
+则该信道的容量为 $C = W\log(1+\frac{P}{N_0W})$ 比特每秒。">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Shannon–Hartley theorem"/>
+  <meta property="og:site_name" content="Don&#39;t Panic!"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Don&#39;t Panic!" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	ga('create', 'UA-40313156-5', 'auto');
+	ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Don&#39;t Panic!</a></h1>
+  <h2><a href="/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2016-03-02T07:07:47.000Z"><a href="/2016/03/02/Shannon-Hartley-theorem/">2016-03-02</a></time>
+      
+      
+  
+    <h1 class="title">Shannon–Hartley theorem</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>有噪信道编码定理只适用于离散的数字信道，若要将其应用于真实的物理信道还需要费一番功夫。当然其结果就是著名的香农极限。</p>
+<blockquote>
+<p>对于某个物理信道，若：</p>
+<ol>
+<li>其带宽为 $W$.</li>
+<li>其噪声为<a href="https://en.wikipedia.org/wiki/Spectral_density#Power_spectral_density" target="_blank" rel="external">功率谱密度</a>为 $N_0$ 的高斯<a href="https://en.wikipedia.org/wiki/White_noise" target="_blank" rel="external">白噪声</a>。</li>
+<li>信号的平均功率为 $P$.</li>
+</ol>
+<p>则该信道的容量为 $C = W\log(1+\frac{P}{N_0W})$ 比特每秒。</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="Convert-to-AWGN"><a href="#Convert-to-AWGN" class="headerlink" title="Convert to AWGN"></a>Convert to AWGN</h2><p>物理信道与之前的数学模型中的信道主要有两点差别，1，信源为连续时间上的函数；2，信源为模拟信号，即取值连续。这里我们先消除第1点差别，将其转换为一个离散时间，模拟信号的信道（<a href="https://en.wikipedia.org/wiki/Additive_white_Gaussian_noise" target="_blank" rel="external">AWGN</a>），即进行采样。</p>
+<p>根据<a href="https://en.wikipedia.org/wiki/Nyquist–Shannon_sampling_theorem" target="_blank" rel="external">采样定理</a>，如果不存在噪声干扰，我们以 $2W$ 的频率对信源 $x(t)$ 进行采样，得到 $\left\{x_k\right\}$ ，信宿只需后者便能将前者完整地还原。现在我们希望在每个 $x_k$ 上叠加一个高斯噪声 $n_k \sim \mathcal{N}(0, \delta)$ 来模拟之前的高斯白噪声 $n(t)$ 所带来的干扰，在信源功率保持不变（$\int_0^T x^2(t) dt = \sum_{i=0}^{2WT} x_k^2$）的情况下，若要使前后的噪声等效，则噪声的功率也需要保持不变，即：<br>$$<br>\delta^2 = \frac{N_0 \cdot W \cdot T}{2WT} = \frac{N_0}{2}\tag{1}\label{eq1}<br>$$.<br>上述分析符合直觉，且其定量分析结果也正确，但要更严格地证明两者的等效性，不如换个方式思考。这次我们通过“离散-模拟信道”传递的是频域的采样而不再是时域的采样。由于时域与频域的对称性，有采样定理的如下推论：对于一个时长不超过 $T$ 的信号，可以在其频谱上每隔 $1/T$（或更短）的频率进行一次采样，便能完整地还原信号，对于带宽为 $W$ 的信号，其频谱区域为 $[-W, W]$，因此总采样次数为 $2WT$，与前面保持一致。</p>
+<p>换句话说，通过“离散-模拟”信道传递 $y(t) = x(t) + n(t)$ 的<a href="https://en.wikipedia.org/wiki/Fourier_series" target="_blank" rel="external">傅里叶级数</a> $\left\{x_k + n_k\right\}, k \in [0, WT)$, 其中 $n_k = \frac1T \int_0^T n(t) e^{-i\frac{2\pi kt}{T}} dt$ 为信道噪声 , $x_k$ 同理，实部加虚部共 $2WT$ 个模拟量，如果在 $n(t)$ 为高斯白噪声的情况下，$n_k$ 服从同一个高斯分布，则说明我们可以通过 AWGN 来模拟物理信道，定量分析的结果与 $\eqref{eq1}$ 相同。</p>
+<p>令 $n(\tau) \sim \mathcal{N}(0, \delta’)$, 考虑其某个傅里叶系数<br>$$<br>Re(n_k) = \frac1T \int_0^T n(t) cos(2\pi kt/T) dt = \lim\limits_{N \to \infty} \frac{1}{N} \sum\limits_{j = 0}^N n(jT/N) cos(2\pi kj/N)<br>$$<br>即 <a href="https://en.wikipedia.org/wiki/Discrete-time_Fourier_transform#Inverse_transform" target="_blank" rel="external">inverse DTFT</a> 是 <a href="https://en.wikipedia.org/wiki/Discrete_Fourier_transform" target="_blank" rel="external">DFT</a> 的极限形式，若后者得到的系数服从高斯分布，则前者亦然。令<br>$$<br>z_j^k \equiv n(jT/N) cos(2\pi kj/N) \sim \mathcal{N}(0, \delta’cos(2\pi kj/N))<br>$$<br>则只需证明 $\sum_j z_j^k$ 服从某个与 $k$ 无关的高斯分布即可。为了标记方便，将 $\mathcal{N}(0, \delta)$ 的概率分布函数记作 $G_\delta$, 并将 $cos(2\pi kj/N)$ 记作 $c_{j, k}$ . 由于两个随机变量之和的分布为两个分布函数的卷积，于是<br>$$<br>P(\sum_j z_j^k = z) \propto (G_{\delta’c_{0, k}} \otimes \cdots \otimes G_{\delta’c_{N, k}})(z)<br>$$</p>
+<p>又由于傅里叶变换满足性质 $\mathcal{F}(f \otimes g) = \mathcal{F}(f) \cdot \mathcal{F}(g)$. 且方差为 $\delta$ 高斯函数的傅里叶变换为方差 $1/\delta$ 的高斯函数<a href="http://code.ucsd.edu/zeger/45/Gaussian.pdf" target="_blank" rel="external">「1」</a>。 于是<br>$$<br>\begin{align*}<br>G_{\delta’c_{0, k}} \otimes \cdots \otimes G_{\delta’c_{N, k}} &amp;= \mathcal{F}^{-1}(\prod\limits_j \mathcal{F}(G_{\delta’c_{j, k}})) \\<br>&amp;= \mathcal{F}^{-1}(\prod\limits_j G_{1/(\delta’c_{j, k})}) \propto \mathcal{F}^{-1}(G_{1/\sqrt{\sum_j (\delta’c_{j, k})^2}}) \\<br>&amp;= G_{\sqrt{\delta’^2 \sum_j cos^2(2\pi kj/N)}} = G_{\sqrt{\delta’^2 N/2}}<br>\end{align*}<br>$$</p>
+<p>即 $n(t)$ 的傅里叶级数确实服从同一个高斯分布<a href="http://dsp.stackexchange.com/questions/24170/what-is-the-statistics-of-the-discrete-fourier-transform-of-white-gaussian-noise" target="_blank" rel="external">「2」</a>。因此，信道的等效成立。总结起来就是：</p>
+<blockquote>
+<p>对于上边定义的物理信道，每使用时间 $T$，等效于 $2WT$ 次使用某 AWGN，其信源的平均能量为 $P/2W$，高斯噪声服从 $\mathcal{N}(0, N_0/2)$.</p>
+</blockquote>
+<h2 id="Channel-Capacity-of-AWGN"><a href="#Channel-Capacity-of-AWGN" class="headerlink" title="Channel Capacity of AWGN"></a>Channel Capacity of AWGN</h2><p>接下来我们希望通过计算 AWGN 的信道容量来给出香农极限。那么每次使用 AWGN 到底能够传递多少比特的信息呢？</p>
+<h3 id="Differential-Entropy"><a href="#Differential-Entropy" class="headerlink" title="Differential Entropy"></a>Differential Entropy</h3><p>为了回答上面的问题，我们首先需要将信息熵和互信息量的定义扩展到连续的模拟量上。直观的做法就是将原来的求和改为积分，也就是说，对于服从概率分布 $P(x)$ 的连续随机变量 $X$, 定义它的信息熵为 $H(X) = - \int P(x) \log P(x)$. 这个积分可能是发散的，但当 $X$ 的方差（也就是信源的平均能量）不超过 $P$ 时，$H(X)$ 的最大值为 $\frac12 \log{(2\pi e P)}$, 当且仅当 $X \sim \mathcal{N}(\mu, \sqrt{P})$ 时取到。</p>
+<p>令 $g = G_{\sigma}$, $f$ 为任意方差不超过 $\sigma^2$ 的概率分布函数，由于平移并不改变信息熵的大小，不妨设两个分布的均值均为 0，计算两者的 <a href="https://en.wikipedia.org/wiki/Kullback–Leibler_divergence" target="_blank" rel="external">K-L divergence</a>, 有：<br>$$<br>\begin{align*}<br>0 \leq D_{KL}(f || g) &amp;= \int_{-\infty}^\infty f(x) \log \left( \frac{f(x)}{g(x)} \right) dx = -H(f) - \int_{-\infty}^\infty f(x)\log(g(x)) dx \\<br>&amp;= -H(f) - \int_{-\infty}^\infty f(x)\log\left( \frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{x^2}{2\sigma^2}}\right) dx \\<br>&amp;= -H(f) - \int_{-\infty}^\infty f(x) \log\frac{1}{\sqrt{2\pi\sigma^2}} dx - \log(e)\int_{-\infty}^\infty f(x)\left( -\frac{x^2}{2\sigma^2}\right) dx \\<br>&amp;\leq -H(f) + \tfrac{1}{2}\log(2\pi\sigma^2) + \log(e)\frac{\sigma^2}{2\sigma^2} \\<br>&amp;= -H(f) +\tfrac{1}{2}\left(\log(2\pi\sigma^2) + \log(e)\right) \\<br>&amp;= -H(f) +\tfrac{1}{2}\log(2\pi e \sigma^2) = -H(f)+H(g)<br>\end{align*}<br>$$<br>上式中等号当且仅当 $f = g$ 时成立。</p>
+<p>像之前一样定义互信息量 $I(X; Y) = H(Y) - H(Y|X)$, 由于 $Y = X + N$, 于是<br>$$<br>I(X; Y) = H(Y) - H(X + N|X) = H(Y) - H(N) = H(Y) - \frac12 \log(\pi eN_0)<br>$$<br>当 $X$ 的平均能量不超过 $P/2W$ 时，$Y$ 的平均能量不超过 $P/2W + N_0/2$, 于是信道容量<br>$$<br>C = \frac12 \log(\pi e (P/W + N_0)) - \frac12 \log(\pi e (N_0)) = \frac12 \log(1 + \frac{P}{N_0W})<br>$$</p>
+<p>算上单位时间内的 AWGN 使用次数便得到了香农极限。</p>
+<h2 id="Sphere-Packing"><a href="#Sphere-Packing" class="headerlink" title="Sphere Packing"></a>Sphere Packing</h2><p>分析到此，我们是将取值连续的随机变量看成是无穷多级的离散随机变量处理，已经足够自圆其说。然而我们可以通过如下方式更加直观地考察其正确性：</p>
+<ol>
+<li>求信道容量就是求使用信道 $N \to \infty$ 次，接收端根据 $N$ 维向量最多能够准确地还原多少个不同的码字，当这个数量为 $M$ 时，$C = \log_2(M)$.</li>
+<li>对于上述 AWGN, 其码字空间为 $\mathbb{R}^N$, 在某个码字 $\mathbf{x}$ 上叠加一个 $N$ 维的高斯噪声，得到输出向量 $\mathbf{y}$, 输出的分布为以 $\mathbf{x}$ 为中心的N维高斯分布，其置信区间为一个半径为 $\sqrt{N\cdot N_0/2}$ 的球。根据上篇中提到过的 <a href="https://en.wikipedia.org/wiki/Asymptotic_equipartition_property" target="_blank" rel="external">AEP</a>, $N$ 足够大时，$\mathbf{y}$ 几乎必然落入球中。</li>
+<li>我们希望找到尽可能多的码字，使得对应的输出的置信区间不重叠，如此一来，我们只需要寻找离 $\mathbf{y}$ 最近的码字便能正确地将其译码。</li>
+<li>由于输出的能量不超过 $N(\frac{P}{2W} + \frac{N_0}{2})$, 因此它将几乎必然落入一个半径 $\sqrt{\frac12 N(P/W+N_0)}$ 的球中。</li>
+<li>$\mathbb{R}^N$ 中半径为 $r$ 的球的体积 $\propto r^N$, 因此4中的大球至多包含 $\sqrt{1+\frac{P}{N_0W}}^N$ 个两两不交的代表置信区间的小球。</li>
+<li>$C \leq \frac12 \log(1 + \frac{P}{N_0W})$.</li>
+</ol>
+<p>至于如何取得等号，需要通过类似有噪信道编码定理的 <strong>JT</strong> 性质来加以证明<a href="https://en.wikipedia.org/wiki/Additive_white_Gaussian_noise#Achievability" target="_blank" rel="external">「3」</a>，此处略去。这样一来便得到了与之前完全一致的结论，happy ending.</p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ul>
+<li><a href="http://code.ucsd.edu/zeger/45/Gaussian.pdf" target="_blank" rel="external">Fourier transform of Gaussian</a></li>
+<li><a href="http://dsp.stackexchange.com/questions/24170/what-is-the-statistics-of-the-discrete-fourier-transform-of-white-gaussian-noise" target="_blank" rel="external">dft of white Gaussian noise?</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Additive_white_Gaussian_noise" target="_blank" rel="external">Additive white Gaussian noise - Wikipedia, the free encyclopedia</a></li>
+<li><a href="http://www.inference.phy.cam.ac.uk/mackay/itila/book.html" target="_blank" rel="external">David MacKay: Information Theory, Inference, and Learning Algorithms: The Book</a></li>
+</ul>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/fun/">fun</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/tags/Information-theory/">Information theory</a>
+  </div>
+
+        
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+    
+      <a class="addthis_button_pinterest_pinit" pi:pinit:layout="horizontal"></a>
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">Comments</h1>
+
+  
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+  
+</section>
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="q" value="site:farseer.cn">
+  </form>
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/PLT/">PLT</a><small>4</small></li>
+  
+    <li><a href="/categories/PRML/">PRML</a><small>4</small></li>
+  
+    <li><a href="/categories/TCS/">TCS</a><small>2</small></li>
+  
+    <li><a href="/categories/fun/">fun</a><small>4</small></li>
+  
+    <li><a href="/categories/notes/">notes</a><small>1</small></li>
+  
+    <li><a href="/categories/tips/">tips</a><small>2</small></li>
+  
+    <li><a href="/categories/tweak/">tweak</a><small>3</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/Coq/">Coq</a><small>1</small></li>
+  
+    <li><a href="/tags/EVA/">EVA</a><small>1</small></li>
+  
+    <li><a href="/tags/Information-theory/">Information theory</a><small>2</small></li>
+  
+    <li><a href="/tags/art/">art</a><small>1</small></li>
+  
+    <li><a href="/tags/distributed/">distributed</a><small>2</small></li>
+  
+    <li><a href="/tags/game/">game</a><small>1</small></li>
+  
+    <li><a href="/tags/haskell/">haskell</a><small>2</small></li>
+  
+    <li><a href="/tags/javascript/">javascript</a><small>2</small></li>
+  
+    <li><a href="/tags/lambda-calculus/">lambda-calculus</a><small>2</small></li>
+  
+    <li><a href="/tags/logic/">logic</a><small>2</small></li>
+  
+    <li><a href="/tags/math/">math</a><small>4</small></li>
+  
+    <li><a href="/tags/ml/">ml</a><small>4</small></li>
+  
+    <li><a href="/tags/paper/">paper</a><small>2</small></li>
+  
+    <li><a href="/tags/physics/">physics</a><small>1</small></li>
+  
+    <li><a href="/tags/scala/">scala</a><small>1</small></li>
+  
+    <li><a href="/tags/shell/">shell</a><small>1</small></li>
+  
+    <li><a href="/tags/spark/">spark</a><small>1</small></li>
+  
+    <li><a href="/tags/vim/">vim</a><small>2</small></li>
+  
+    <li><a href="/tags/vimperator/">vimperator</a><small>3</small></li>
+  
+    <li><a href="/tags/zsh/">zsh</a><small>1</small></li>
+  
+    <li><a href="/tags/ツッコミ/">ツッコミ</a><small>1</small></li>
+  
+    <li><a href="/tags/中二病/">中二病</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2016 Farseer He
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+<script type="text/javascript">
+var disqus_shortname = 'githubio';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+<!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+</body>
+</html>

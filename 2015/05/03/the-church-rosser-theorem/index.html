@@ -1,0 +1,374 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>The Church-Rosser Theorem | Don&#39;t Panic!</title>
+  <meta name="author" content="Farseer He">
+  
+  <meta name="description" content="闲扯最近写的尽是些有的没的，完全没有干货。怎么说，最近考虑在思考人生，价值观在改变，简而言之就是又退化到科学&amp;gt;&amp;gt;技术的中二阶段。一方面看到现阶段所谓“技术产物”的各种各样的问题，另一方面由于自身智力，能力，精力的限制，没有办法对其进行改进和提升，只能采取粗暴的、眼不见为净的鸵鸟政策。其实我知道自己是躲不掉的（当然我说的是找工作），但是还是想在不得不面对之前关心些别的，或者说补救些别的，能补多少是多少吧。年轻的时候有大把时间，却不想念书，现在老了，想念书了，却没有多少时间了（有时间也架不住嗜睡）。
+Anyway, 我接下来准备翻译大段的关于无类型lambda-calculus中Church-Rosser定理的证明，为什么要做这么无聊的事情？因为我觉得有趣…为什么不先完善下之前对STLC的证明？1.不求甚解是我的一贯毛（feng）病（ge）；2.这个定理在它的证明中会有一丢丢的作用，Normalization证明的补充会在之后进行。">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="The Church-Rosser Theorem"/>
+  <meta property="og:site_name" content="Don&#39;t Panic!"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Don&#39;t Panic!" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	ga('create', 'UA-40313156-5', 'auto');
+	ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Don&#39;t Panic!</a></h1>
+  <h2><a href="/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-05-02T16:00:00.000Z"><a href="/2015/05/03/the-church-rosser-theorem/">2015-05-03</a></time>
+      
+      
+  
+    <h1 class="title">The Church-Rosser Theorem</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="闲扯"><a href="#闲扯" class="headerlink" title="闲扯"></a>闲扯</h2><p>最近写的尽是些有的没的，完全没有干货。怎么说，最近考虑在思考人生，价值观在改变，简而言之就是又退化到科学&gt;&gt;技术的中二阶段。一方面看到现阶段所谓“技术产物”的各种各样的问题，另一方面由于自身智力，能力，精力的限制，没有办法对其进行改进和提升，只能采取粗暴的、眼不见为净的鸵鸟政策。其实我知道自己是躲不掉的（当然我说的是找工作），但是还是想在不得不面对之前关心些别的，或者说补救些别的，能补多少是多少吧。年轻的时候有大把时间，却不想念书，现在老了，想念书了，却没有多少时间了（有时间也架不住嗜睡）。</p>
+<p>Anyway, 我接下来准备翻译大段的关于无类型lambda-calculus中Church-Rosser定理的证明，为什么要做这么无聊的事情？因为我觉得有趣…为什么不先完善下之前对STLC的证明？1.不求甚解是我的一贯毛（feng）病（ge）；2.这个定理在它的证明中会有一丢丢的作用，Normalization证明的补充会在之后进行。</p>
+<a id="more"></a>
+<h2 id="beta-eta-reduction"><a href="#beta-eta-reduction" class="headerlink" title="beta-eta-reduction"></a>beta-eta-reduction</h2><ul>
+<li>$\beta-reduction$ 就不赘述了</li>
+<li>$\beta-equivalence$ 为其自反，对称，传递闭包，记作 $=_{\beta}$，描述的是这样的二元关系：两个表达式可以通过若干步正向或者反向的beta归约相互转化。</li>
+<li>$\eta-reduction$ 规定如果两个表达式作用在任意相同的表达式上，得到的结果相同，则可以认为两个表达式相同，即函数相同的定义。于是有$\lambda x.Mx \rightarrow_{\eta} M, where\ x \notin FV(M)$</li>
+<li>$\beta\eta-reduction$ 就是两者的结合，记作 $\rightarrow_{\beta\eta}$</li>
+<li>结合后的多步操作，即其自反，传递闭包记作 $\twoheadrightarrow_{\beta\eta}$，equivalence, normal form的概念也有相应的扩充</li>
+</ul>
+<h2 id="Statement-of-Church-Rosser-Theorem"><a href="#Statement-of-Church-Rosser-Theorem" class="headerlink" title="Statement of Church-Rosser Theorem"></a>Statement of Church-Rosser Theorem</h2><ul>
+<li>用双箭头表示 $\twoheadrightarrow_{\beta}$ 或者 $\twoheadrightarrow_{\beta\eta}$</li>
+</ul>
+<p>如果某M, N, P满足 $M \twoheadrightarrow N \land M \twoheadrightarrow P$，则存在某个Z，使得 $N \twoheadrightarrow Z \land P \twoheadrightarrow Z$。<br>就是说，不论在beta或者是beta-eta的操作语义下，如果N和P对于M都是多步可达的，那么它们必定共享某个可达的表达式Z，如下图：</p>
+<p><img src="/assets/images/article/Church_Rosser.png" alt="cr"></p>
+<h3 id="What-does-that-theorem-imply"><a href="#What-does-that-theorem-imply" class="headerlink" title="What does that theorem imply?"></a>What does that theorem imply?</h3><p><strong>Corollary 1</strong> : 如果 $M =_{\beta} N$，则存在某表达式Z，使得$M,N \twoheadrightarrow_{\beta} Z$，对beta-eta有同样结论。</p>
+<p><strong>Proof</strong> : 前提条件等价于如下描述：存在一个有限的表达式序列$M_0, M_1, …, M_n$，其中相邻的两个表达式满足关系$\leftarrow_{\beta}$或者$\rightarrow_{\beta}$，且头和尾分别是M和N。</p>
+<p>对n进行归纳，当n为0时，M与N恒等，结论显然。若n-1时成立，归纳假设，存在Z’使得$M \twoheadrightarrow_{\beta} Z’ \land M_{n-1} \twoheadrightarrow_{\beta} Z’$。<br>N和$M_n$之间的关系有两种情况：</p>
+<ol>
+<li>$N \rightarrow_{\beta} M_{n-1}$ : 于是有 $N \twoheadrightarrow_{\beta} Z’$，于是Z’即满足</li>
+<li>$N \leftarrow_{\beta} M_{n-1}$ : 我们将Church-Rosser定理作用于$M_{n-1}, Z’, N$，于是存在Z使得 $Z’ \twoheadrightarrow_{\beta} Z \land N \twoheadrightarrow_{\beta} Z$，于是 $M \twoheadrightarrow_{\beta} Z’ \twoheadrightarrow_{\beta} Z$，得证。</li>
+</ol>
+<p>对于beta-eta有类似证明。</p>
+<p><strong>Corollary 2</strong> : 如果N是一个normal form(无法继续归约)，$N =_{\beta} M$，则 $M \twoheadrightarrow_{\beta} N$, beta-eta类似。</p>
+<p><strong>Proof</strong> : <strong>1</strong>的简单推论，Z只能是N</p>
+<p><strong>Corollary 3</strong> : 如果$M =_{\beta} N$，则其中一者的normal form也是另一者的normal form, beta-eta类似。</p>
+<p><strong>Proof</strong> : 不妨设M有normal form Z，于是有$M =_{\beta} Z =_{\beta} N$，于是根据<strong>2</strong>有 $N \twoheadrightarrow_{\beta} Z$，得证。</p>
+<p>可以看出<strong>3</strong>是一个很有意义的推论，有助于后续性质的推导。</p>
+<h3 id="Why-is-that-hard-to-proof"><a href="#Why-is-that-hard-to-proof" class="headerlink" title="Why is that hard to proof?"></a>Why is that hard to proof?</h3><p>对下图中的a, b, c作与该定理的描述相似的解读。</p>
+<p><img src="/assets/images/article/Church_Rosser_abc.png" alt="cr-abc"></p>
+<ul>
+<li>a等价于Church-Rosser定理</li>
+<li>容易证明c蕴含a，但是$\beta\eta-reduction$不满足c(又叫Diamond property)</li>
+<li>a蕴含b，反之不然（反例见下图），于是我们无法通过证明b来证明a</li>
+</ul>
+<p><img src="/assets/images/article/Church_Rosser_ba.png" alt="cr-ba"></p>
+<p>定理的证明过程通过寻找一个满足如下性质的归约关系 $\triangleright$ 来克服上述困难：</p>
+<ul>
+<li>$\triangleright$ 满足c</li>
+<li>其自反，传递闭包即为$\twoheadrightarrow_{\beta\eta}$</li>
+</ul>
+<p>假设能够找到这样的关系，那么根据其c性质推出其a性质，又在a中，其多步的闭包与beta-eta相同，便能证明beta-eta满足a性质</p>
+<h2 id="Proof-of-the-Theorem"><a href="#Proof-of-the-Theorem" class="headerlink" title="Proof of the Theorem"></a>Proof of the Theorem</h2><p>$\triangleright$ 定义如下：</p>
+<ol>
+<li>$\overline{M \triangleright M}$</li>
+<li>$\dfrac{P \triangleright P’ \ \ N \triangleright N’}{PN \triangleright P’N’}$</li>
+<li>$\dfrac{N \triangleright N’}{\lambda x.N \triangleright \lambda x.N’}$</li>
+<li>$\dfrac{Q \triangleright Q’ \ \ N \triangleright N’}{(\lambda x.Q)N \triangleright Q’[N’/x]}$</li>
+<li>$\dfrac{P \triangleright P’, where\ x \notin FV(P)}{\lambda x.Px \triangleright P’}$</li>
+</ol>
+<h3 id="Lemma1"><a href="#Lemma1" class="headerlink" title="Lemma1"></a>Lemma1</h3><p><strong>Lemma1</strong> :</p>
+<ol>
+<li>如果$M \rightarrow_{\beta} M’$ 则 $M \triangleright M’$</li>
+<li>如果$M \triangleright M’$ 则 $M \twoheadrightarrow_{\beta\eta} M’$</li>
+<li>$\twoheadrightarrow_{\triangleright} = \twoheadrightarrow_{\beta\eta}$</li>
+</ol>
+<p><strong>Proof</strong> :</p>
+<p>1和2类似，通过对前提中的关系进行归纳便容易得证，这里就不展开冗长的过程了。事实上这个新的关系又叫作<strong>parallel one-step reduction</strong>，它的每步归约可以比beta-eta多做一些事情，相当于把多步并作一步进行（也可以不选择并行，根据1），这么理解之后1和2的结论便是显然成立的。</p>
+<p>至于3，根据1可得，若beta-eta多步归约可达，则parallel one-step多步归约可达，即$\twoheadrightarrow_{\triangleright} \subseteq \twoheadrightarrow_{\beta\eta}$；根据2，反之，即$\twoheadrightarrow_{\beta\eta} \subseteq \twoheadrightarrow_{\triangleright}$。</p>
+<h3 id="Lemma2"><a href="#Lemma2" class="headerlink" title="Lemma2"></a>Lemma2</h3><p>至此，我们只需证明parallel one-step满足性质c。为此，我们还需要若干引理。</p>
+<p><strong>Lemma2</strong> : 若 $M \triangleright M’ \land U \triangleright U’$，则 $M[U/y] \triangleright M’[U’/y]$</p>
+<p><strong>Proof</strong> : 对 $M \triangleright M’$ 进行归纳，共5种情况，对于标号1, 2, 3, 5的情况，结论显然，不再赘述，针对4：</p>
+<ul>
+<li>有$M = (\lambda x.Q)N \land M’ = Q’[N’/x] \land Q \triangleright Q’ \land N \triangleright N’$</li>
+<li>归纳假设，有$Q[U/y] \triangleright Q’[U’/y] \land N[U/y] \triangleright N’[U’/y]$</li>
+<li>根据规则4，有$(\lambda x.Q[U/y]) N[U/y] \triangleright Q’[U’/y][N’[U’/y]/x] = Q’[N’/x][U’/y]$ 即 $M[U/y] \triangleright M’[U’/y]$，得证</li>
+</ul>
+<h3 id="Lemma3"><a href="#Lemma3" class="headerlink" title="Lemma3"></a>Lemma3</h3><p>引入最终形态（maximal parallel one-step reduct）M*的概念，形式化定义如下：</p>
+<ol>
+<li>$x^* = x$, for variable x</li>
+<li>$(PN)^* = P^*N^*$, if PN is not a $\beta-redex$</li>
+<li>$(\lambda x.N)^* = \lambda x.N^*$, if $\lambda x.N$ is not a $\eta-redex$</li>
+<li>$((\lambda x.Q) N)^* = Q^*[N^*/x]$</li>
+<li>$(\lambda x.P x)^* = P^*$, if $x \notin FV(P)$</li>
+</ol>
+<p><strong>Lemma3</strong> : 若 $M \triangleright M’$，则 $M’ \triangleright M^*$</p>
+<p><strong>Proof</strong> : 对M的大小进行归纳，首先，按照惯例，将前提分成5种情况：</p>
+<ol>
+<li>M = M’ = x, 又 M* = x, 成立</li>
+<li>M = PN，M’ = P’N’, $P \triangleright P’ \land N \triangleright N’$. 归纳假设，得到 $P’ \triangleright P^* \land N’ \triangleright N^*$，再分为两种情况：<ol>
+<li>PN不是个beta可约式，根据终极形态的定义2，$M’ = P’ N’ \triangleright P^*N^* = M^*$，得证</li>
+<li>PN beta可约，则P为一个lambda函数，设$P = \lambda x.Q$，则根据终极心态定义4 $M^* = Q^*[N^*/x]$，对$P \triangleright P’$再分情况，只能是1, 3, 5：<ol>
+<li>若为1，$M’ = PN’ = Q[N’/x]$，由于Q为M的一部分，大小小于M，归纳假设，有$Q \triangleright Q \triangleright Q^*$，于是根据<strong>Lemma2</strong>, $M’ = Q[N’/x] \triangleright Q^*[N^*/x] = M^*$</li>
+<li>若为3，$P’ = \lambda x.Q’ \land Q \triangleright Q’$，同理，Q的大小小于M，归纳假设有$Q’ \triangleright Q^*$，于是根据归约条件4，$M’ = (\lambda x.Q’)N’ \triangleright Q^*[N^*/x] = M^*$</li>
+<li>若为5，$P = \lambda x.R’x \land P’ = R’ \land R \triangleright R’$ 且x不是P’的自由变量，Rx是M的子式，归纳假设，$Rx \triangleright R’x \triangleright (Rx)^*$，根据<strong>Lemma2</strong>，有$M’ = R’N’ = (R’x)[N’/x] \triangleright (Rx)^*[N^*/x] = M^*$</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>$M = \lambda x.N \land M’ = \lambda x.N’ \land N \triangleright N’$，分两种情况<ol>
+<li>M eta不可约，则根据终极形态定义3，$M^* = \lambda x.N^*$，根据归约定义3，$M’ = \lambda x.N’ \triangleright \lambda x.N^* = M^*$</li>
+<li>M eta可约，则$M = \lambda x.Px \land N=Px \land x \notin FV(P)$，根据终极形态定义5，M* = P*, 对$N \triangleright N’$再分情况，只能是1, 2, 4：<ol>
+<li>若为1，N=N’=Px, P为M的子式，归纳假设，根据归约条件5，$P \triangleright P \triangleright P^*, M’ = \lambda x.Px \triangleright P^* = M^*$</li>
+<li>若为2，$N’ = P’x \land P \triangleright P’$，同理，归纳假设，根据归约条件5， $P’ \triangleright P^*, M’ = \lambda x.P’x \triangleright P^* = M^*$</li>
+<li>若为4，$P = \lambda y.Q \land N’ = Q’[x/y] \land Q \triangleright Q’$，P为M子式，有$P \triangleright \lambda y.Q’ \triangleright P^*$，于是$M’ = \lambda x.Q’[x/y] = \lambda y.Q’ \triangleright P^*$，右边最后一个等号是因为x不是Q’的自由变量</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>$M = (\lambda x.Q)N \land M’ = Q’[N’/x] \land Q \triangleright Q’ \land N \triangleright N’$，根据终极形态定义4，$M^* = Q^*[N^*/x]$，根据<strong>Lemma2</strong>，得证</li>
+<li>$M = \lambda x.Px \land M’=P’ \land P \triangleright P’$，同上，归纳假设，$M’ = P’ \triangleright P^* = M^*$</li>
+</ol>
+<p>Q.E.D</p>
+<h3 id="Diamond-Property"><a href="#Diamond-Property" class="headerlink" title="Diamond Property"></a>Diamond Property</h3><p>终于，可以通过Lemma3来证明parallel one-step满足c属性，i.e. Diamond Property了。</p>
+<p>回忆下c属性的描述： 若$M \triangleright N \land M \triangleright P$，则存在Z满足 $N \triangleright Z \land P \triangleright Z$。</p>
+<p>这里只需要使 Z = M* ，根据<strong>Lemma3</strong>，结论显然。至此，结合前文的铺垫，Church-Rosser定理便得到了证明。</p>
+<p>对于beta-reduction，只需要调整构造，将对应的规则5都删去即可。</p>
+<h2 id="叹为观止"><a href="#叹为观止" class="headerlink" title="叹为观止"></a>叹为观止</h2><p>如此神奇的证明，我虽然能理解它是有道理的，但是完全无法想象出这样奇妙的证明是怎么构造出来的，尤其是其中parallel one-step和maximal reduct的构造。<br>相比与糟糕的应用，糟糕的工具，糟糕的OS（尤其是IOS），糟糕的服务，糟糕的设备……数学是如此的美好~~</p>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><ul>
+<li><a href="http://www.mathstat.dal.ca/~selinger/papers/lambdanotes.pdf" target="_blank" rel="external">Lecture Notes on the Lambda Calculus</a></li>
+</ul>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/PLT/">PLT</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/tags/logic/">logic</a>, <a href="/tags/lambda-calculus/">lambda-calculus</a>
+  </div>
+
+        
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+    
+      <a class="addthis_button_pinterest_pinit" pi:pinit:layout="horizontal"></a>
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">Comments</h1>
+
+  
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+  
+</section>
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="q" value="site:farseer.cn">
+  </form>
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/PLT/">PLT</a><small>4</small></li>
+  
+    <li><a href="/categories/PRML/">PRML</a><small>4</small></li>
+  
+    <li><a href="/categories/TCS/">TCS</a><small>2</small></li>
+  
+    <li><a href="/categories/fun/">fun</a><small>4</small></li>
+  
+    <li><a href="/categories/notes/">notes</a><small>1</small></li>
+  
+    <li><a href="/categories/tips/">tips</a><small>2</small></li>
+  
+    <li><a href="/categories/tweak/">tweak</a><small>3</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/Coq/">Coq</a><small>1</small></li>
+  
+    <li><a href="/tags/EVA/">EVA</a><small>1</small></li>
+  
+    <li><a href="/tags/Information-theory/">Information theory</a><small>2</small></li>
+  
+    <li><a href="/tags/art/">art</a><small>1</small></li>
+  
+    <li><a href="/tags/distributed/">distributed</a><small>2</small></li>
+  
+    <li><a href="/tags/game/">game</a><small>1</small></li>
+  
+    <li><a href="/tags/haskell/">haskell</a><small>2</small></li>
+  
+    <li><a href="/tags/javascript/">javascript</a><small>2</small></li>
+  
+    <li><a href="/tags/lambda-calculus/">lambda-calculus</a><small>2</small></li>
+  
+    <li><a href="/tags/logic/">logic</a><small>2</small></li>
+  
+    <li><a href="/tags/math/">math</a><small>4</small></li>
+  
+    <li><a href="/tags/ml/">ml</a><small>4</small></li>
+  
+    <li><a href="/tags/paper/">paper</a><small>2</small></li>
+  
+    <li><a href="/tags/physics/">physics</a><small>1</small></li>
+  
+    <li><a href="/tags/scala/">scala</a><small>1</small></li>
+  
+    <li><a href="/tags/shell/">shell</a><small>1</small></li>
+  
+    <li><a href="/tags/spark/">spark</a><small>1</small></li>
+  
+    <li><a href="/tags/vim/">vim</a><small>2</small></li>
+  
+    <li><a href="/tags/vimperator/">vimperator</a><small>3</small></li>
+  
+    <li><a href="/tags/zsh/">zsh</a><small>1</small></li>
+  
+    <li><a href="/tags/ツッコミ/">ツッコミ</a><small>1</small></li>
+  
+    <li><a href="/tags/中二病/">中二病</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2016 Farseer He
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+<script type="text/javascript">
+var disqus_shortname = 'githubio';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+<!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+</body>
+</html>

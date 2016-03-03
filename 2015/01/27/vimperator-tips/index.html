@@ -1,0 +1,290 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Vimperator tips | Don&#39;t Panic!</title>
+  <meta name="author" content="Farseer He">
+  
+  <meta name="description" content="vimperator是什么鬼？对于找到这的人来说，这是个无聊的问题，没办法，好久没写东西了，缺乏基本的文字内容组织能力，只好遵循渐进的法则…
+vimperator 是一个firefox扩展，有很强的可定制性，很好玩，神器，以上。类似的东西有Pentadactyl(不支持最新的ff),VimFx(功能比较简单)。
+好吧，接下来我分享一些vimperator的配置。">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Vimperator tips"/>
+  <meta property="og:site_name" content="Don&#39;t Panic!"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Don&#39;t Panic!" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	ga('create', 'UA-40313156-5', 'auto');
+	ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Don&#39;t Panic!</a></h1>
+  <h2><a href="/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-01-26T16:00:00.000Z"><a href="/2015/01/27/vimperator-tips/">2015-01-27</a></time>
+      
+      
+  
+    <h1 class="title">Vimperator tips</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="vimperator是什么鬼？"><a href="#vimperator是什么鬼？" class="headerlink" title="vimperator是什么鬼？"></a>vimperator是什么鬼？</h2><p>对于找到这的人来说，这是个无聊的问题，没办法，好久没写东西了，缺乏基本的文字内容组织能力，<br>只好遵循渐进的法则…</p>
+<p>vimperator 是一个firefox扩展，有很强的可定制性，很好玩，神器，以上。<br>类似的东西有<a href="http://5digits.org/pentadactyl/" target="_blank" rel="external">Pentadactyl</a>(不支持最新的ff),<a href="https://github.com/akhodakivskiy/VimFx" target="_blank" rel="external">VimFx</a>(功能比较简单)。</p>
+<p>好吧，接下来我分享一些vimperator的<a href="https://github.com/blindFS/dotfiles/blob/master/.vimperatorrc" target="_blank" rel="external">配置</a>。</p>
+<a id="more"></a>
+<h2 id="个人偏好options设置"><a href="#个人偏好options设置" class="headerlink" title="个人偏好options设置"></a>个人偏好options设置</h2><p>以下配置都写入.vimperatorrc文件，这个应该都知道…</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> hintchars=abcdefghijklmnopqrstuvwxyz <span class="comment">" 默认使用数字，不如字母好按</span></span><br><span class="line"><span class="keyword">set</span> suggestengines=<span class="string">''</span>                    <span class="comment">" 不使用google等搜索引擎进行页面推荐，为了加快速度</span></span><br><span class="line"><span class="keyword">set</span> <span class="keyword">gui</span>=nonavigation                     <span class="comment">" 隐藏nav-bar</span></span><br><span class="line"><span class="keyword">set</span> focuscontent                         <span class="comment">" 打开页面之后默认进入normal-mode</span></span><br><span class="line"><span class="keyword">set</span> wildmode=lis<span class="variable">t:full</span>                   <span class="comment">" 补全选项</span></span><br><span class="line"><span class="keyword">set</span> noscrollbars                         <span class="comment">" 隐藏scrollbar，因为底部已经有百分比了</span></span><br><span class="line"><span class="keyword">set</span> animations                           <span class="comment">" vimperator自己的动画效果</span></span><br><span class="line"><span class="keyword">colorscheme</span> indigo                       <span class="comment">" 网上找的配色，默认的略丑</span></span><br></pre></td></tr></table></figure>
+<h2 id="禁止Ctrl-Q直接退出firefox"><a href="#禁止Ctrl-Q直接退出firefox" class="headerlink" title="禁止Ctrl+Q直接退出firefox"></a>禁止Ctrl+Q直接退出firefox</h2><p>浏览器一般会打开好几十个页面，万一按错键导致退出，要重启的话需要等待相当长的时间。<br>另外我把Ctrl-Q设置成了tmux的prefix(其实这是个非常2的决定，按习惯了，懒得改)。<br>vimperator除了类似vi的默认快捷键之外，支持自定义几乎所有按键，语句与vim非常类似，包括nmap,imap,cmap。</p>
+<p>那么要实现这个功能就非常的简单，<code>nnoremap &lt;C-Q&gt; &lt;C-W&gt;</code>，设置成了关闭tab的功能。<br>同时，vimperator提供了退出firefox的默认按键ZZ，极大的降低了误操作的可能。</p>
+<h2 id="添加pin-tab和unpin-tab的功能"><a href="#添加pin-tab和unpin-tab的功能" class="headerlink" title="添加pin-tab和unpin-tab的功能"></a>添加pin-tab和unpin-tab的功能</h2><p>除了按键之外，作为一个神器，当然支持自定义ex命令了。当然你也可以把它绑定到某个按键上…</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">command! pin :set apptab</span><br><span class="line">command! unpin :set noapptab</span><br></pre></td></tr></table></figure>
+<h2 id="进入hint模式后自动禁用中文输入法"><a href="#进入hint模式后自动禁用中文输入法" class="headerlink" title="进入hint模式后自动禁用中文输入法"></a>进入hint模式后自动禁用中文输入法</h2><p>按f或者F进入，这是一个非常核心的功能，主要就是靠它解放鼠标，<br>因此如果因为输入法问题需要进行多余操作的话会非常痛苦。如下解决方案适用于fcitx。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">nnoremap &lt;silent&gt; f :silent !fcitx-remote -c&lt;CR&gt;f</span><br><span class="line">nnoremap &lt;silent&gt; F :silent !fcitx-remote -c&lt;CR&gt;F</span><br><span class="line">nnoremap &lt;silent&gt; : :silent !fcitx-remote -c&lt;CR&gt;:</span><br></pre></td></tr></table></figure>
+<h2 id="通过gui选项实现类似The-fox-only-better的效果"><a href="#通过gui选项实现类似The-fox-only-better的效果" class="headerlink" title="通过gui选项实现类似The-fox-only-better的效果"></a>通过gui选项实现类似The-fox-only-better的效果</h2><p>The-fox-only-better是一个很赞的ff扩展，在twitter上看到有人推荐之后使用了一段时间，<br>这个扩展和vimperator可以非常完美的共存，之所以把它去掉，是因为我在修改tab-bar的样式之后，如果<br>不禁用它会导致tab-bar下方一直有一条2px左右的白线，轻微强迫症，不太能接受…<br>另外其实鼠标hover呼出nav-bar的功能我也不太需要，最近崇尚极简主义，所以…</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nnoremap &lt;C-L&gt; :set gui=navigation&lt;CR&gt;&lt;C-L&gt;</span><br><span class="line">nnoremap &lt;Esc&gt; &lt;Esc&gt;:set gui=nonavigation&lt;CR&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="类似stylish的功能"><a href="#类似stylish的功能" class="headerlink" title="类似stylish的功能"></a>类似stylish的功能</h2><p>vimperator提供了一系列跟stylish类似的功能，具体可以参见 <code>:h :style</code></p>
+<p>创建一个style的基本格式如下:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">style -name style_name chrome://url-pattern &lt;&lt;EOM</span><br><span class="line">    some-css-snippet</span><br><span class="line">EOM</span><br></pre></td></tr></table></figure>
+<p>之后可以使用如下命令进行控制:</p>
+<ul>
+<li>styledisable</li>
+<li>styleenable</li>
+<li>styletoggle</li>
+</ul>
+<p>原本我打算删除stylish，全部通过这样的方式进行管理，但是不久我发现这样不太靠谱，因为自己写的style毕竟少，<br>多数是通过 userstyles.org 安装的，好在<a href="https://github.com/vimpr/vimperator-plugins" target="_blank" rel="external">vimperator-plugins</a>中<br>提供了一个stylish的管理插件，只要在.vimperatorrc中source它就行了。</p>
+<p>BTW，我通过stylish安装了一些网站的dark主题，而vimperator自带的功能则用来管理浏览器的界面样式，分工明确~<br>我抄了<a href="https://userstyles.org/styles/102262/twily-s-powerline-firefox-css" target="_blank" rel="external">这个</a>的一段css，把tab-bar改成了powerline的风格，<br>跟awesome wm的powerline很搭~~</p>
+<p><img src="/assets/images/article/firefox-powerline.png" alt="ff-pl"></p>
+<h2 id="通过vimperator的接口实现Open-With的功能"><a href="#通过vimperator的接口实现Open-With的功能" class="headerlink" title="通过vimperator的接口实现Open With的功能"></a>通过vimperator的接口实现Open With的功能</h2><p>对我来说使用Open With主要是为了用you-get，bilidan之类的工具来播放视频，我需要将这个功能<br>绑定到一个按键(之后介绍通过autocmd实现自动化)，现有的Open With不能满足我的需求。</p>
+<p><code>Don&#39;t panic!</code>，在MDN手册和google的帮助下，我写了一个vimperator-plugins: open-with.js ，代码如下:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">commands.addUserCommand(</span><br><span class="line">    [<span class="string">'openwith'</span>],</span><br><span class="line">    <span class="string">'Open current url with external commands'</span>,</span><br><span class="line">    <span class="function"><span class="keyword">function</span>(<span class="params">args</span>)</span>&#123;</span><br><span class="line">      <span class="keyword">var</span> URL = buffer.URL;</span><br><span class="line">      <span class="keyword">var</span> Cc = Components.classes;</span><br><span class="line">      <span class="keyword">var</span> Ci = Components.interfaces;</span><br><span class="line">      <span class="keyword">var</span> file = Cc[<span class="string">"@mozilla.org/file/local;1"</span>]</span><br><span class="line">        .createInstance(Ci.nsILocalFile);</span><br><span class="line">      <span class="keyword">var</span> environment = Cc[<span class="string">"@mozilla.org/process/environment;1"</span>]</span><br><span class="line">        .getService(Ci.nsIEnvironment);</span><br><span class="line">      <span class="keyword">var</span> path = environment.get(<span class="string">"PATH"</span>).split(<span class="string">':'</span>);</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">var</span> i=<span class="number">0</span>; i &lt; path.length; ++i) &#123;</span><br><span class="line">        file.initWithPath(path[i]+<span class="string">'/'</span>+args[<span class="number">0</span>]);</span><br><span class="line">        <span class="keyword">if</span> (file.exists())</span><br><span class="line">          <span class="keyword">break</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      liberator.echo(<span class="string">'Opening with '</span>+args.shift());</span><br><span class="line">      args = args.concat([URL]);</span><br><span class="line">      <span class="keyword">var</span> process = Cc[<span class="string">"@mozilla.org/process/util;1"</span>]</span><br><span class="line">        .createInstance(Ci.nsIProcess);</span><br><span class="line">      process.init(file);</span><br><span class="line">      process.run(<span class="literal">false</span>, args, args.length);</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      completer: <span class="function"><span class="keyword">function</span> (<span class="params">context</span>) <span class="title">completion</span>.<span class="title">shellCommand</span>(<span class="params">context</span>)</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="title">true</span></span><br><span class="line">    );</span></span><br></pre></td></tr></table></figure>
+<p>使用方法也是先在.vimperatorrc里source，然后<code>:openwith shellcommand</code>。</p>
+<h2 id="一键开关flash-player"><a href="#一键开关flash-player" class="headerlink" title="一键开关flash-player"></a>一键开关flash-player</h2><p>恼人的flash有的时候不得不使用，因此你需要如下配置：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">javascript &lt;&lt;EOM</span><br><span class="line">function toggle_flash() &#123;</span><br><span class="line">  var oldvar = options.getPref('plugin.state.flash');</span><br><span class="line">  if (oldvar &gt; 0)</span><br><span class="line">    liberator.echo('flash-plugin disabled.');</span><br><span class="line">  else</span><br><span class="line">    liberator.echo('flash-plugin enabled.');</span><br><span class="line">  options.setPref('plugin.state.flash', 2-oldvar);</span><br><span class="line">&#125;</span><br><span class="line">EOM</span><br><span class="line"></span><br><span class="line">command! flashtoggle :js toggle_flash()</span><br><span class="line">nnoremap &lt;C-F&gt; :flashtoggle&lt;CR&gt;</span><br></pre></td></tr></table></figure>
+<p>Note:Ctrl-F默认是page-down，但是有j了，无所谓就覆盖掉吧。</p>
+<h2 id="通过autocmd解决google-inbox的访问"><a href="#通过autocmd解决google-inbox的访问" class="headerlink" title="通过autocmd解决google inbox的访问"></a>通过autocmd解决google inbox的访问</h2><p>参考<a href="https://gist.github.com/VictorBjelkholm/1d0f4ee6dc5ec0d6646e" target="_blank" rel="external">这个</a>。<br>实现:</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">javascript &lt;&lt;EOM</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">inbox_enable</span><span class="params">()</span> &#123;</span></span><br><span class="line">  <span class="keyword">options</span>.setPref(<span class="string">'general.useragent.override'</span>,</span><br><span class="line">    <span class="string">'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 '</span> +</span><br><span class="line">    <span class="string">'(KHTML, like Gecko) Chrome/39.0.2171.99 Safari/537.36'</span>);</span><br><span class="line">  <span class="keyword">options</span>.setPref(<span class="string">'security.csp.enable'</span>, false);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">restore_from_inbox</span><span class="params">()</span> &#123;</span></span><br><span class="line"> <span class="keyword">options</span>.resetPref(<span class="string">'general.useragent.override'</span>);</span><br><span class="line"> <span class="keyword">options</span>.setPref(<span class="string">'security.csp.enable'</span>, true);</span><br><span class="line">&#125;</span><br><span class="line">EOM</span><br><span class="line"></span><br><span class="line"><span class="keyword">autocmd</span> LocationChange .* js restore_from_inbox()</span><br><span class="line"><span class="keyword">autocmd</span> LocationChange inbox\\.google\\.<span class="keyword">com</span> js inbox_enable()</span><br></pre></td></tr></table></figure>
+<h2 id="通过autocmd在flash禁用的情况下实现自动播放"><a href="#通过autocmd在flash禁用的情况下实现自动播放" class="headerlink" title="通过autocmd在flash禁用的情况下实现自动播放"></a>通过autocmd在flash禁用的情况下实现自动播放</h2><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">javascript &lt;&lt;EOM</span><br><span class="line">function execute_if_no_flash(command) &#123;</span><br><span class="line">  if (options.getPref('plugin.state.flash') == 0)</span><br><span class="line">    liberator.execute(command);</span><br><span class="line">&#125;</span><br><span class="line">EOM</span><br><span class="line"></span><br><span class="line">command! youplayer :openwith youplayer</span><br><span class="line">command! bilidan :openwith bilidan</span><br><span class="line">autocmd PageLoad v\\.youku\\.com js execute_if_no_flash('youplayer')</span><br><span class="line">autocmd PageLoad www\\.bilibili\\.com/video/av js execute_if_no_flash('bilidan')</span><br></pre></td></tr></table></figure>
+<p>只是举个简单的例子，需要用到上文提到过的open-with.js，其实也可以在toggle_flash函数中添加/删除autocmd来处理，<br>不过那样不够灵活。</p>
+<h2 id="一些有用的plugin"><a href="#一些有用的plugin" class="headerlink" title="一些有用的plugin"></a>一些有用的plugin</h2><p>上边提到过<a href="https://github.com/vimpr/vimperator-plugins" target="_blank" rel="external">vimperator-plugins</a>这个repo，里面的插件数不胜数，<br>我目前用到的有:</p>
+<ul>
+<li>stylish 上文已经提及</li>
+<li>tabsort 给tab排序</li>
+<li>feedSomeKeys 必须，在某些页面上禁用某些快捷键</li>
+<li>goo.gl url 压缩</li>
+</ul>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/tips/">tips</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/tags/vimperator/">vimperator</a>, <a href="/tags/javascript/">javascript</a>, <a href="/tags/vim/">vim</a>
+  </div>
+
+        
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+    
+      <a class="addthis_button_pinterest_pinit" pi:pinit:layout="horizontal"></a>
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">Comments</h1>
+
+  
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+  
+</section>
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="q" value="site:farseer.cn">
+  </form>
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/PLT/">PLT</a><small>4</small></li>
+  
+    <li><a href="/categories/PRML/">PRML</a><small>4</small></li>
+  
+    <li><a href="/categories/TCS/">TCS</a><small>2</small></li>
+  
+    <li><a href="/categories/fun/">fun</a><small>4</small></li>
+  
+    <li><a href="/categories/notes/">notes</a><small>1</small></li>
+  
+    <li><a href="/categories/tips/">tips</a><small>2</small></li>
+  
+    <li><a href="/categories/tweak/">tweak</a><small>3</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/Coq/">Coq</a><small>1</small></li>
+  
+    <li><a href="/tags/EVA/">EVA</a><small>1</small></li>
+  
+    <li><a href="/tags/Information-theory/">Information theory</a><small>2</small></li>
+  
+    <li><a href="/tags/art/">art</a><small>1</small></li>
+  
+    <li><a href="/tags/distributed/">distributed</a><small>2</small></li>
+  
+    <li><a href="/tags/game/">game</a><small>1</small></li>
+  
+    <li><a href="/tags/haskell/">haskell</a><small>2</small></li>
+  
+    <li><a href="/tags/javascript/">javascript</a><small>2</small></li>
+  
+    <li><a href="/tags/lambda-calculus/">lambda-calculus</a><small>2</small></li>
+  
+    <li><a href="/tags/logic/">logic</a><small>2</small></li>
+  
+    <li><a href="/tags/math/">math</a><small>4</small></li>
+  
+    <li><a href="/tags/ml/">ml</a><small>4</small></li>
+  
+    <li><a href="/tags/paper/">paper</a><small>2</small></li>
+  
+    <li><a href="/tags/physics/">physics</a><small>1</small></li>
+  
+    <li><a href="/tags/scala/">scala</a><small>1</small></li>
+  
+    <li><a href="/tags/shell/">shell</a><small>1</small></li>
+  
+    <li><a href="/tags/spark/">spark</a><small>1</small></li>
+  
+    <li><a href="/tags/vim/">vim</a><small>2</small></li>
+  
+    <li><a href="/tags/vimperator/">vimperator</a><small>3</small></li>
+  
+    <li><a href="/tags/zsh/">zsh</a><small>1</small></li>
+  
+    <li><a href="/tags/ツッコミ/">ツッコミ</a><small>1</small></li>
+  
+    <li><a href="/tags/中二病/">中二病</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2016 Farseer He
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+<script type="text/javascript">
+var disqus_shortname = 'githubio';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+</body>
+</html>

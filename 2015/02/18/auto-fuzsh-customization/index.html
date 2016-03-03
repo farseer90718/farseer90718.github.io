@@ -1,0 +1,286 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Auto-fu.zsh customization | Don&#39;t Panic!</title>
+  <meta name="author" content="Farseer He">
+  
+  <meta name="description" content="大概是这么一回事放假闲的慌，于是开始折腾些有的没的，忘记是怎么看到这个repo的了…觉得很好玩的样子，就打算试试看。但是折腾的过程中发现，要让这个插件跟我原有的配置共洽，稍稍有点费劲，于是在此记录下我的无聊行径。
+选择合适的branch一开始发现它和zsh-syntax-highlighting闹矛盾，翻了下github的issue，发现有两个branch解决了这个问题，分别是pu和thb，没搞懂名字怎么来的…
+pu比thb多了自动纠正，其实我对自动纠正挺反感的，无奈的是thb有些其它的bug，比如在按下tab补全路径的时候会多一个/，总之就是我选择了pu这个分支。">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Auto-fu.zsh customization"/>
+  <meta property="og:site_name" content="Don&#39;t Panic!"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Don&#39;t Panic!" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	ga('create', 'UA-40313156-5', 'auto');
+	ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Don&#39;t Panic!</a></h1>
+  <h2><a href="/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-02-17T16:00:00.000Z"><a href="/2015/02/18/auto-fuzsh-customization/">2015-02-18</a></time>
+      
+      
+  
+    <h1 class="title">Auto-fu.zsh customization</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="大概是这么一回事"><a href="#大概是这么一回事" class="headerlink" title="大概是这么一回事"></a>大概是这么一回事</h2><p>放假闲的慌，于是开始折腾些有的没的，忘记是怎么看到<a href="https://github.com/hchbaw/auto-fu.zsh" target="_blank" rel="external">这个repo</a>的了…觉得很好玩的样子，就打算试试看。但是折腾的过程中发现，要让这个插件跟我原有的配置共洽，稍稍有点费劲，于是在此记录下我的无聊行径。</p>
+<h2 id="选择合适的branch"><a href="#选择合适的branch" class="headerlink" title="选择合适的branch"></a>选择合适的branch</h2><p>一开始发现它和zsh-syntax-highlighting闹矛盾，翻了下github的issue，发现有两个branch解决了这个问题，分别是pu和thb，没搞懂名字怎么来的…</p>
+<p>pu比thb多了自动纠正，其实我对自动纠正挺反感的，无奈的是thb有些其它的bug，比如在按下tab补全路径的时候会多一个<code>/</code>，总之就是我选择了pu这个分支。</p>
+<a id="more"></a>
+<h2 id="初始化配置"><a href="#初始化配置" class="headerlink" title="初始化配置"></a>初始化配置</h2><p>这个在文档里就有，不过github上的readme的格式比较糟糕。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 需要oldlist</span></span><br><span class="line"><span class="built_in">zstyle</span> <span class="string">':completion:*'</span> completer _oldlist _complete</span><br><span class="line"><span class="comment"># 跳过rm的第一个参数</span></span><br><span class="line"><span class="built_in">zstyle</span> <span class="string">':auto-fu:var'</span> autoable-function/skiplbuffers \</span><br><span class="line">    <span class="string">'rm -[![:blank:]]#'</span></span><br><span class="line"><span class="comment"># 使能auto-fu</span></span><br><span class="line"><span class="built_in">zle</span>-line-<span class="function"><span class="title">init</span></span> () &#123;</span><br><span class="line">    auto-fu-init</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">zle</span> -N <span class="built_in">zle</span>-line-init</span><br></pre></td></tr></table></figure>
+<p>auto-fu的skip规则，比较复杂，具体参见文档，我还没有仔细探究。<br>这里最关键的步骤就是zle-line-init这个widget，每行初始化的时候都会调用auto-fu-init，i.e. 使能auto-fu。这样配置之后就能正常工作了。</p>
+<h2 id="外观"><a href="#外观" class="headerlink" title="外观"></a>外观</h2><p>为了保持外观的统一，我做了如下调整。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 原有的消息格式</span></span><br><span class="line"><span class="built_in">zstyle</span> <span class="string">':completion:*:descriptions'</span> format $<span class="string">' \e[30;42m %d \e[0m\e[32m\e[0m'</span></span><br><span class="line"><span class="built_in">zstyle</span> <span class="string">':completion:*:messages'</span> format $<span class="string">' \e[30;45m %d \e[0m\e[35m\e[0m'</span></span><br><span class="line"><span class="built_in">zstyle</span> <span class="string">':completion:*:warnings'</span> format $<span class="string">' \e[30;41m No Match Found \e[0m\e[31m\e[0m'</span></span><br><span class="line"><span class="comment"># 去掉多余的提示信息</span></span><br><span class="line"><span class="built_in">zstyle</span> <span class="string">':auto-fu:var'</span> postdisplay <span class="string">''</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># prompt中的vimod字段</span></span><br><span class="line"><span class="keyword">function</span> <span class="built_in">zle</span>-keymap-select &#123;</span><br><span class="line"><span class="comment"># afu所需</span></span><br><span class="line">    afu-track-keymap <span class="string">"<span class="variable">$@</span>"</span> afu-adjust-main-keymap</span><br><span class="line">    <span class="keyword">if</span> [[ <span class="variable">$KEYMAP</span> =~ <span class="string">"vicmd"</span> ]]; <span class="keyword">then</span></span><br><span class="line">        vimod=<span class="variable">$vimodcmd</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        vimod=<span class="variable">$vimodins</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">    <span class="built_in">zle</span> reset-prompt</span><br><span class="line">    <span class="built_in">zle</span> -R</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">zle</span> -N <span class="built_in">zle</span>-keymap-select</span><br></pre></td></tr></table></figure>
+<p>我在prompt中添加了<code>$vimod</code>提示，具体<a href="https://github.com/blindFS/zsh-funcs/blob/master/powerline.zsh" target="_blank" rel="external">内容</a>见链接。这个函数在每次keymap发生变化时调用，注意这时的 keymap 的值可能是auto-fu提供的 <em>afu-viins</em> 和 <em>afu-vicmd</em> ，所以判断的时候采取 <code>=~</code>。<br>这样之后还有个问题，就是自动纠错时会产生不必要的消息，导致如下情况：</p>
+<p><img src="/assets/images/article/auto-fu.png" alt="afu"></p>
+<p>解决办法：这里没有提供选项，只能通过修改源码了，去掉<code>_message ...</code>这句话就OK。补全的消息本身就带有correction提示，就不需要重复的提示了。</p>
+<h2 id="添加toggle"><a href="#添加toggle" class="headerlink" title="添加toggle"></a>添加toggle</h2><p>这个插件虽然在功能性上有一定的作用，但是我想大多数人会认为比较鸡肋，尤其是补全消息很多的情况下会发生卡顿，就得不偿失了，我觉得我需要开关它的机制。</p>
+<p>自带的widget名为<code>auto-fu-toggle</code>只能开关正在处理的这行，而真正是否使能该插件的因素在于之前提到的zle-line-init，没有想到更好的解决方案的情况下，我添加了如下widget：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">toggle-auto-<span class="function"><span class="title">fu</span></span>() &#123;</span><br><span class="line">    <span class="keyword">if</span> (( $+<span class="built_in">disable</span>_auto_fu )); <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">zle</span>-line-<span class="function"><span class="title">init</span></span> () &#123;</span><br><span class="line">            auto-fu-init</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">zle</span> -N <span class="built_in">zle</span>-line-init</span><br><span class="line">        <span class="built_in">unset</span> <span class="built_in">disable</span>_auto_fu</span><br><span class="line">        auto-fu-init</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">zle</span> -D <span class="built_in">zle</span>-line-init</span><br><span class="line">        auto-fu-deactivate</span><br><span class="line">        <span class="built_in">disable</span>_auto_fu=1</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">zle</span> -N toggle-auto-fu</span><br><span class="line"><span class="built_in">bindkey</span> <span class="string">'^O'</span> toggle-auto-fu</span><br><span class="line"><span class="built_in">bindkey</span> -M afu <span class="string">'^O'</span> toggle-auto-fu</span><br></pre></td></tr></table></figure>
+<p>注意这里需要bind两次，因为在使能和非使能的情况下，keymap所属的组是不同的。这个toggle函数能在当前行以及之后的所有行产生作用，正是我想要的效果。另外，由于keymap发生变化，之前的widget需要重新复制一份，另外切换至afu-vicmd的默认快捷键略繁琐，改成ESC。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">bindkey</span> -M afu <span class="string">'^T'</span> fzf-file-widget</span><br><span class="line"><span class="built_in">bindkey</span> -M afu <span class="string">'^L'</span> fzf-cd-widget</span><br><span class="line"><span class="built_in">bindkey</span> -M afu <span class="string">'^H'</span> fzf-history-widget</span><br><span class="line"><span class="built_in">bindkey</span> -M afu <span class="string">'\e'</span> afu+vi-cmd-mode</span><br><span class="line"><span class="built_in">bindkey</span> -M afu-vicmd <span class="string">'k'</span> <span class="built_in">history</span>-substring-search-up</span><br><span class="line"><span class="built_in">bindkey</span> -M afu-vicmd <span class="string">'j'</span> <span class="built_in">history</span>-substring-search-down</span><br><span class="line"><span class="built_in">bindkey</span> -M afu-vicmd <span class="string">'cc'</span> vi-change-whole-line</span><br></pre></td></tr></table></figure>
+<p>顺便一提，fzf和history-substring-search确实能提高不少的效率，谁用谁知道。</p>
+<p>我在折腾的过程中，无意搜到这个很有意思的玩意：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">autoload</span> -U tetris</span><br><span class="line"><span class="built_in">zle</span> -N tetris</span><br><span class="line"><span class="built_in">bindkey</span> <span class="string">'^T'</span> tetris</span><br></pre></td></tr></table></figure>
+<p>有意思的地方是，如果直接执行tetris，会输出<code>Use M-x tetris RET to play tetris.</code>的提示;-)。</p>
+<p>zsh的功能十分复杂，我也就是带着不求甚解的心态折腾着玩罢了。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/tweak/">tweak</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/tags/zsh/">zsh</a>, <a href="/tags/shell/">shell</a>
+  </div>
+
+        
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+    
+      <a class="addthis_button_pinterest_pinit" pi:pinit:layout="horizontal"></a>
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">Comments</h1>
+
+  
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+  
+</section>
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="q" value="site:farseer.cn">
+  </form>
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/PLT/">PLT</a><small>4</small></li>
+  
+    <li><a href="/categories/PRML/">PRML</a><small>4</small></li>
+  
+    <li><a href="/categories/TCS/">TCS</a><small>2</small></li>
+  
+    <li><a href="/categories/fun/">fun</a><small>4</small></li>
+  
+    <li><a href="/categories/notes/">notes</a><small>1</small></li>
+  
+    <li><a href="/categories/tips/">tips</a><small>2</small></li>
+  
+    <li><a href="/categories/tweak/">tweak</a><small>3</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/Coq/">Coq</a><small>1</small></li>
+  
+    <li><a href="/tags/EVA/">EVA</a><small>1</small></li>
+  
+    <li><a href="/tags/Information-theory/">Information theory</a><small>2</small></li>
+  
+    <li><a href="/tags/art/">art</a><small>1</small></li>
+  
+    <li><a href="/tags/distributed/">distributed</a><small>2</small></li>
+  
+    <li><a href="/tags/game/">game</a><small>1</small></li>
+  
+    <li><a href="/tags/haskell/">haskell</a><small>2</small></li>
+  
+    <li><a href="/tags/javascript/">javascript</a><small>2</small></li>
+  
+    <li><a href="/tags/lambda-calculus/">lambda-calculus</a><small>2</small></li>
+  
+    <li><a href="/tags/logic/">logic</a><small>2</small></li>
+  
+    <li><a href="/tags/math/">math</a><small>4</small></li>
+  
+    <li><a href="/tags/ml/">ml</a><small>4</small></li>
+  
+    <li><a href="/tags/paper/">paper</a><small>2</small></li>
+  
+    <li><a href="/tags/physics/">physics</a><small>1</small></li>
+  
+    <li><a href="/tags/scala/">scala</a><small>1</small></li>
+  
+    <li><a href="/tags/shell/">shell</a><small>1</small></li>
+  
+    <li><a href="/tags/spark/">spark</a><small>1</small></li>
+  
+    <li><a href="/tags/vim/">vim</a><small>2</small></li>
+  
+    <li><a href="/tags/vimperator/">vimperator</a><small>3</small></li>
+  
+    <li><a href="/tags/zsh/">zsh</a><small>1</small></li>
+  
+    <li><a href="/tags/ツッコミ/">ツッコミ</a><small>1</small></li>
+  
+    <li><a href="/tags/中二病/">中二病</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2016 Farseer He
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+<script type="text/javascript">
+var disqus_shortname = 'githubio';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+<!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+</body>
+</html>

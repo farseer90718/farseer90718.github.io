@@ -1,0 +1,281 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Vimperator tips 2 | Don&#39;t Panic!</title>
+  <meta name="author" content="Farseer He">
+  
+  <meta name="description" content="Ver 3.8.3 (release) gi触发错误按键gi的作用是focus到当前页面的input/textarea/iframe，即进入类似vim中的input模式。在该版本中概率出错(xpath相关，具体记不得了)。解决办法很简单，安装git版本就可以了。刚开始看vimperator的源码，尚且不熟悉架构，但是buffer相关的默认按键执行的操作可以在/common/content/buffer.js中找到。概述信息可以通过mappings module获取，通过:echo mappings.get(0, &amp;#39;gi&amp;#39;, &amp;#39;.*&amp;#39;)">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Vimperator tips 2"/>
+  <meta property="og:site_name" content="Don&#39;t Panic!"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Don&#39;t Panic!" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	ga('create', 'UA-40313156-5', 'auto');
+	ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Don&#39;t Panic!</a></h1>
+  <h2><a href="/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-02-03T16:00:00.000Z"><a href="/2015/02/04/vimperator-tips-2/">2015-02-04</a></time>
+      
+      
+  
+    <h1 class="title">Vimperator tips 2</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="Ver-3-8-3-release-gi触发错误"><a href="#Ver-3-8-3-release-gi触发错误" class="headerlink" title="Ver 3.8.3 (release) gi触发错误"></a>Ver 3.8.3 (release) gi触发错误</h2><p>按键gi的作用是focus到当前页面的input/textarea/iframe，即进入类似vim中的input模式。<br>在该版本中概率出错(xpath相关，具体记不得了)。<br>解决办法很简单，安装<a href="https://github.com/vimperator/vimperator-labs" target="_blank" rel="external">git版本</a>就可以了。<br>刚开始看vimperator的源码，尚且不熟悉架构，但是buffer相关的默认按键执行的操作可以在<br><code>/common/content/buffer.js</code>中找到。概述信息可以通过mappings module获取，通过<br><code>:echo mappings.get(0, &#39;gi&#39;, &#39;.*&#39;)</code></p>
+<a id="more"></a>
+<h2 id="快速复制markdown格式的url"><a href="#快速复制markdown格式的url" class="headerlink" title="快速复制markdown格式的url"></a>快速复制markdown格式的url</h2><p>方法来自g+ vimperator中文社区的owner 陈三，稍作改动:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">javascript &lt;&lt; EOM</span><br><span class="line">function markdown_url() &#123;</span><br><span class="line">  var mdurl = '[' + buffer.title + '](' + buffer.URL + ')';</span><br><span class="line">  util.copyToClipboard(mdurl);</span><br><span class="line">  liberator.echo('copied:' + mdurl);</span><br><span class="line">&#125;</span><br><span class="line">EOM</span><br><span class="line"></span><br><span class="line">nnoremap &lt;C-Y&gt; :js markdown_url()&lt;CR&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="proxy解决方案"><a href="#proxy解决方案" class="headerlink" title="proxy解决方案"></a>proxy解决方案</h2><p>在学校用openvpn十分无脑，到了家中觉得速度不理想，于是想到之前github送的<br>student pack包括DO的100刀，就架了个SS server。SS当然要配合<br><a href="https://github.com/clowwindy/gfwlist2pac" target="_blank" rel="external">pac</a>使用。</p>
+<p>那么浏览器用什么插件呢？选择不要太多，我之前是foxy proxy，但是界面复杂，不方便切换。<br>于是准备用vimp插件进行替换。其实完全可以自己写，只要改 <code>network.proxy.autoconfig_url</code><br>和 <code>network.proxy.type</code> 两个option即可。但是已经有<a href="https://gist.github.com/eagletmt/814452" target="_blank" rel="external">现成的解决方案</a>，<br>直接拿来用。</p>
+<h3 id="在statusline显示proxy状态"><a href="#在statusline显示proxy状态" class="headerlink" title="在statusline显示proxy状态"></a>在statusline显示proxy状态</h3><p>一个自然的需求，另外因为轻微强迫症的关系，蛋疼地把statusline<br>改成了powerline风格了，代码过于丑陋就不贴了，<br>可以在<a href="https://github.com/blindFS/dotfiles/blob/master/.vimperatorrc" target="_blank" rel="external">这里</a>找到它们。</p>
+<p>截个图展示一下:</p>
+<p><img src="/assets/images/article/vimpower.png" alt="vimp-pl"></p>
+<h2 id="plugins"><a href="#plugins" class="headerlink" title="plugins"></a>plugins</h2><p>除了上一篇中提到的一些插件外，又发现了如下的玩意儿:</p>
+<ul>
+<li>smooziee : 使jk滚动时更加平滑</li>
+<li>caret-hint : caret-mode 相关</li>
+<li>imageextender : 图片快捷操作</li>
+<li>plugin_loader : 插件管理器</li>
+</ul>
+<p>下面挑几个具体说明用法。</p>
+<h3 id="plugin-loader"><a href="#plugin-loader" class="headerlink" title="plugin_loader"></a>plugin_loader</h3><p>用的插件多了之后，每个都source一下显得比较多余，可能需要一个插件管理器。<br>使用方法:</p>
+<ol>
+<li>设置 <code>g:plugin_loader_roots</code> 为插件文件所在目录</li>
+<li>设置 <code>g:plugin_loader_plugins</code> 为所需插件，字符串，逗号分割</li>
+<li>source libly.js 和 plugin_loader.js</li>
+</ol>
+<h3 id="caret-mode"><a href="#caret-mode" class="headerlink" title="caret mode"></a>caret mode</h3><p>比较难以描述，具体请看 <code>:h caret-mode</code>。<br>总之在我看来主要是用来快速选择文字的，比如说你要选择页面上的某段 “select” 开头的文字<br>并且将其复制到剪贴板，如果不借助鼠标，那么一般的流程是:</p>
+<ol>
+<li>/select搜索页面</li>
+<li>normal模式下按c进入caret模式</li>
+<li>按v进入visual模式，通过wel等vi快捷键到达文字结尾</li>
+<li>按y复制</li>
+</ol>
+<p>这么做有明显的不足:</p>
+<ul>
+<li>多个matcher的时候经常搞不清光标位置</li>
+<li>不利于处理各种unicode，比如中文</li>
+</ul>
+<p>caret-hint就是解决这个问题的插件，为文字片段提供了类似link的hint模式，谁用谁知道。</p>
+<h3 id="feedSomeKeys-amp-ignorekeys"><a href="#feedSomeKeys-amp-ignorekeys" class="headerlink" title="feedSomeKeys &amp; ignorekeys"></a>feedSomeKeys &amp; ignorekeys</h3><p>首先说我目前用到的feedSomeKeys的功能均可以通过自带的<code>:h :ignorekeys</code>命令替换。<br>顺便一提，normal模式下按i将ignore掉下一个按键，&lt;S-ESC&gt;则ignore all。<br>但是feedSomeKeys的强大不仅于此，它能够用于替换网页前端的按键，具体用法见文档。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/tips/">tips</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/tags/vimperator/">vimperator</a>, <a href="/tags/javascript/">javascript</a>
+  </div>
+
+        
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+    
+      <a class="addthis_button_pinterest_pinit" pi:pinit:layout="horizontal"></a>
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">Comments</h1>
+
+  
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+  
+</section>
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="q" value="site:farseer.cn">
+  </form>
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/PLT/">PLT</a><small>4</small></li>
+  
+    <li><a href="/categories/PRML/">PRML</a><small>4</small></li>
+  
+    <li><a href="/categories/TCS/">TCS</a><small>2</small></li>
+  
+    <li><a href="/categories/fun/">fun</a><small>4</small></li>
+  
+    <li><a href="/categories/notes/">notes</a><small>1</small></li>
+  
+    <li><a href="/categories/tips/">tips</a><small>2</small></li>
+  
+    <li><a href="/categories/tweak/">tweak</a><small>3</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/Coq/">Coq</a><small>1</small></li>
+  
+    <li><a href="/tags/EVA/">EVA</a><small>1</small></li>
+  
+    <li><a href="/tags/Information-theory/">Information theory</a><small>2</small></li>
+  
+    <li><a href="/tags/art/">art</a><small>1</small></li>
+  
+    <li><a href="/tags/distributed/">distributed</a><small>2</small></li>
+  
+    <li><a href="/tags/game/">game</a><small>1</small></li>
+  
+    <li><a href="/tags/haskell/">haskell</a><small>2</small></li>
+  
+    <li><a href="/tags/javascript/">javascript</a><small>2</small></li>
+  
+    <li><a href="/tags/lambda-calculus/">lambda-calculus</a><small>2</small></li>
+  
+    <li><a href="/tags/logic/">logic</a><small>2</small></li>
+  
+    <li><a href="/tags/math/">math</a><small>4</small></li>
+  
+    <li><a href="/tags/ml/">ml</a><small>4</small></li>
+  
+    <li><a href="/tags/paper/">paper</a><small>2</small></li>
+  
+    <li><a href="/tags/physics/">physics</a><small>1</small></li>
+  
+    <li><a href="/tags/scala/">scala</a><small>1</small></li>
+  
+    <li><a href="/tags/shell/">shell</a><small>1</small></li>
+  
+    <li><a href="/tags/spark/">spark</a><small>1</small></li>
+  
+    <li><a href="/tags/vim/">vim</a><small>2</small></li>
+  
+    <li><a href="/tags/vimperator/">vimperator</a><small>3</small></li>
+  
+    <li><a href="/tags/zsh/">zsh</a><small>1</small></li>
+  
+    <li><a href="/tags/ツッコミ/">ツッコミ</a><small>1</small></li>
+  
+    <li><a href="/tags/中二病/">中二病</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2016 Farseer He
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+<script type="text/javascript">
+var disqus_shortname = 'githubio';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+</body>
+</html>

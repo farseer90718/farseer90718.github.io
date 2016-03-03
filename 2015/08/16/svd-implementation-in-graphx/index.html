@@ -1,0 +1,362 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>SVD++ Implementation in GraphX | Don&#39;t Panic!</title>
+  <meta name="author" content="Farseer He">
+  
+  <meta name="description" content="Clarification写完之后我突然发现这个标题看上去貌似有“以下实现是由本人完成的”这样的误导，所以特此澄清，下文出现的代码统统摘自 apache/spark.
+SVD++ Intro首先简单介绍 SVD++ 算法在协同过滤中的应用及其数学直觉。
+SVD in CF考虑 CF 中最为常见的用户给电影评分的场景，我们需要一个数学模型来模拟用户给电影打分的场景，i.e. 对评分进行预测。
+一个 Naive 的方案可以是将评分矩阵看作是两个矩阵的乘积：
+$$U = \begin{bmatrix}u_{11} &amp;amp; \cdots &amp;amp; u_{1k} \\\vdots &amp;amp; \ddots &amp;amp; \vdots \\u_{m1} &amp;amp; \cdots &amp;amp; u_{mk}\end{bmatrix}\begin{bmatrix}i_{11} &amp;amp; \cdots &amp;amp; i_{1n} \\\vdots &amp;amp; \ddots &amp;amp; \vdots \\i_{k1} &amp;amp; \cdots &amp;amp; i_{kn}\end{bmatrix}$$.">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="SVD++ Implementation in GraphX"/>
+  <meta property="og:site_name" content="Don&#39;t Panic!"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Don&#39;t Panic!" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	ga('create', 'UA-40313156-5', 'auto');
+	ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Don&#39;t Panic!</a></h1>
+  <h2><a href="/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-08-15T16:00:00.000Z"><a href="/2015/08/16/svd-implementation-in-graphx/">2015-08-16</a></time>
+      
+      
+  
+    <h1 class="title">SVD++ Implementation in GraphX</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="Clarification"><a href="#Clarification" class="headerlink" title="Clarification"></a>Clarification</h2><p>写完之后我突然发现这个标题看上去貌似有“以下实现是由本人完成的”这样的误导，所以特此澄清，下文出现的代码统统摘自<br> <a href="https://github.com/apache/spark.git" target="_blank" rel="external">apache/spark</a>.</p>
+<h2 id="SVD-Intro"><a href="#SVD-Intro" class="headerlink" title="SVD++ Intro"></a>SVD++ Intro</h2><p>首先简单介绍 SVD++ 算法在协同过滤中的应用及其数学直觉。</p>
+<h3 id="SVD-in-CF"><a href="#SVD-in-CF" class="headerlink" title="SVD in CF"></a>SVD in CF</h3><p>考虑 CF 中最为常见的用户给电影评分的场景，我们需要一个数学模型来模拟用户给电影打分的场景，i.e. 对评分进行预测。</p>
+<p>一个 Naive 的方案可以是将评分矩阵看作是两个矩阵的乘积：</p>
+<p>$$<br>U = \begin{bmatrix}<br>u_{11} &amp; \cdots &amp; u_{1k} \\<br>\vdots &amp; \ddots &amp; \vdots \\<br>u_{m1} &amp; \cdots &amp; u_{mk}<br>\end{bmatrix}<br>\begin{bmatrix}<br>i_{11} &amp; \cdots &amp; i_{1n} \\<br>\vdots &amp; \ddots &amp; \vdots \\<br>i_{k1} &amp; \cdots &amp; i_{kn}<br>\end{bmatrix}<br>$$.</p>
+<a id="more"></a>
+<p>其中的 $u_{xy}$ 可以看作是 user x 对电影的隐藏特质 y 的热衷程度，而 $i_{yz}$ 可以看作是特质 y 在电影 z 中的体现程度。那么上述模型的评分预测公式为：</p>
+<p>$$<br>\hat{r}_{ui} = q_i ^T p_u<br>$$</p>
+<p>q 和 p 分别对应了电影和用户在各个隐藏特质上的特征向量。</p>
+<p>以上的模型中，用户和电影都体现得无差别，例如某些用户非常挑剔，总是给予很低的评分；或是某部电影拍得奇烂，恶评如潮。为了模拟以上的情况，需要引入 baseline predictor.</p>
+<p>$$<br>\hat{r}_{ui} = \mu + b_i + b_u + q_i ^T p_u<br>$$</p>
+<p>其中 μ 为所有评分基准，$b_i$ 为电影 i 的评分均值相对 μ 的偏移，$b_u$ 类似。注意，这些均为参数，需要通过训练得到具体数值，不过可以用相应的均值作为初始化时的估计。</p>
+<h3 id="SVD"><a href="#SVD" class="headerlink" title="SVD++"></a>SVD++</h3><p>某个用户对某个电影进行了评分，那么说明他看过这部电影，那么这样的行为事实上蕴含了一定的信息，因此我们可以这样来理解问题：评分的行为从侧面反映了用户的喜好，可以将这样的反映通过隐式参数的形式体现在模型中，从而得到一个更为精细的模型，便是 SVD++.</p>
+<p>$$<br>\hat{r}_{ui} = \mu + b_i + b_u + (p_u + \frac{1}{\sqrt{|N(u)|}}\sum_{j\in N(u)} y_j ) ^T q_i \tag{1}\label{eq1}<br>$$</p>
+<p>其中 N(u) 为该用户所评价过的所有电影的集合，$y_j$ 为隐藏的“评价了电影 j”反映出的个人喜好偏置。收缩因子取集合大小的根号是一个经验公式，并没有理论依据。</p>
+<p>事实上隐式返回的形式可以是多样的，例如可以考虑一个用户的相邻用户对其产生的影响，这在Koren 的原始论文中也有提及，他甚至在最后提到了一个整合了两者的模型。</p>
+<p>但是有些方式在实际应用中存在问题，比如我们反过来考虑用户的评价行为对电影特征的影响就不合适，这是因为实际应用中用户数量往往是远大于电影数量的，这么做会引入过多的隐式参数，导致模型在训练的时候难以收敛。</p>
+<p>我们暂且只关注上面公式对应的隐式模型，因为后文关心的 GraphX 中的实现如此。</p>
+<h3 id="Training"><a href="#Training" class="headerlink" title="Training"></a>Training</h3><p>有了上述的模型，我们的训练目标非常明确，即最小化 RMSE:</p>
+<p>$$<br>min_{q_*,x_*,y_*,b_*,} \sum\limits_{(u, i) \in \mathfrak{K}} (r_{ui}-\hat{r}_{ui}) ^2 + \lambda_6(b_u ^2 + b_i ^2) + \lambda_7(||q_i|| ^2 + ||p_u|| ^2 + ||y_j|| ^2)<br>$$</p>
+<p>后两项为正规化因子，为了避免过拟合，之所以选这么诡异的下标，是为了跟 GraphX 中的实现对应，事实上该实现是参照了原论文中的命名，只可惜搞乱了希腊字母 lambda 和 gamma，Whatever…</p>
+<p>带入 $\eqref{eq1}$ 后求偏导，容易得到如下的学习公式：</p>
+<p>$$<br>e_{ui} \overset{def}{=} r_{ui} - \hat{r}_{ui} \\<br>b_u \gets b_u + \gamma_1 \cdot (e_{ui} - \lambda_6 \cdot b_u) \\<br>b_i \gets b_i + \gamma_1 \cdot (e_{ui} - \lambda_6 \cdot b_i) \\<br>q_i \gets q_i + \gamma_2 \cdot (e_{ui} \cdot (p_u + |N(u)| ^{-\frac{1}{2}} \sum_{j \in N(u)} y_j) - \lambda_7 \cdot q_i) \\<br>p_u \gets p_u + \gamma_2 \cdot (e_{ui} \cdot q_i - \lambda_7 \cdot p_u) \\<br>\forall j \in N(u): y_j \gets y_j + \gamma_2 \cdot (e_{ui} \cdot |N(u)| ^{-\frac{1}{2}} \cdot q_i - \lambda_7 \cdot y_j)<br>$$</p>
+<p>此处选取了两种学习速率。</p>
+<h2 id="Implementation-in-GraphX"><a href="#Implementation-in-GraphX" class="headerlink" title="Implementation in GraphX"></a>Implementation in GraphX</h2><p>GraphX 是 Apache Spark 中的图计算框架，SVD++ 算法以一种图的形式在其中得到了实现。基本思路：将用户和电影看作两种节点，打分看作是连接对应节点的边，从而得到一个二分图。更具体的有：</p>
+<ul>
+<li>用户节点 u 具有四元组属性 $(p_u, p_u + |N(u)| ^{-\frac{1}{2}} \cdot \sum\limits_{j \in N(u)} y_j, b_u, |N(u)| ^{-\frac{1}{2}})$</li>
+<li>电影（姑且这么叫）节点 i 具有四元组属性 $(q_i, y_i, b_i, *)$</li>
+<li>边节点具有属性 $r_{ui}$，边的源节点为 u，目标节点为 i</li>
+</ul>
+<p>其实了解了上述设定之后源码便容易理解了，下面具体展开一下。</p>
+<h3 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h3><p>首先看下入口函数的类型：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">run</span></span>(edges: <span class="type">RDD</span>[<span class="type">Edge</span>[<span class="type">Double</span>]], conf: <span class="type">Conf</span>)</span><br><span class="line">    : (<span class="type">Graph</span>[(<span class="type">Array</span>[<span class="type">Double</span>], <span class="type">Array</span>[<span class="type">Double</span>], <span class="type">Double</span>, <span class="type">Double</span>), <span class="type">Double</span>], <span class="type">Double</span>)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>函数参数为一个包含了所有的评分的 RDD，需要转化成 Edge 的数据结构，可以简单理解为三元组 (u, i, rate).</li>
+<li>函数的返回值为一个二元组，第1元为训练之后得到的图，图中的各个节点包括了训练之后得到的各个参数<ul>
+<li>向量以数组的形式存储</li>
+</ul>
+</li>
+<li>第二元为所有评分的均值</li>
+</ul>
+<h3 id="Initialization"><a href="#Initialization" class="headerlink" title="Initialization"></a>Initialization</h3><p>首先计算 baseline predictor 的初始值（各种均值），以及随机初始化各个个性向量。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Generate default vertex attribute</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">defaultF</span></span>(rank: <span class="type">Int</span>): (<span class="type">Array</span>[<span class="type">Double</span>], <span class="type">Array</span>[<span class="type">Double</span>], <span class="type">Double</span>, <span class="type">Double</span>) = &#123;</span><br><span class="line">    <span class="comment">// <span class="doctag">TODO:</span> use a fixed random seed</span></span><br><span class="line">    <span class="keyword">val</span> v1 = <span class="type">Array</span>.fill(rank)(<span class="type">Random</span>.nextDouble())</span><br><span class="line">    <span class="keyword">val</span> v2 = <span class="type">Array</span>.fill(rank)(<span class="type">Random</span>.nextDouble())</span><br><span class="line">    (v1, v2, <span class="number">0.0</span>, <span class="number">0.0</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// calculate global rating mean</span></span><br><span class="line">edges.cache()</span><br><span class="line"><span class="keyword">val</span> (rs, rc) = edges.map(e =&gt; (e.attr, <span class="number">1</span>L)).reduce((a, b) =&gt; (a._1 + b._1, a._2 + b._2))</span><br><span class="line"><span class="keyword">val</span> u = rs / rc</span><br><span class="line"></span><br><span class="line"><span class="comment">// construct graph</span></span><br><span class="line"><span class="keyword">var</span> g = <span class="type">Graph</span>.fromEdges(edges, defaultF(conf.rank)).cache()</span><br><span class="line">materialize(g)</span><br><span class="line">edges.unpersist()</span><br><span class="line"></span><br><span class="line"><span class="comment">// Calculate initial bias and norm</span></span><br><span class="line"><span class="keyword">val</span> t0 = g.aggregateMessages[(<span class="type">Long</span>, <span class="type">Double</span>)](</span><br><span class="line">    ctx =&gt; &#123; ctx.sendToSrc((<span class="number">1</span>L, ctx.attr)); ctx.sendToDst((<span class="number">1</span>L, ctx.attr)) &#125;,</span><br><span class="line">    (g1, g2) =&gt; (g1._1 + g2._1, g1._2 + g2._2))</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> gJoinT0 = g.outerJoinVertices(t0) &#123;</span><br><span class="line">    (vid: <span class="type">VertexId</span>, vd: (<span class="type">Array</span>[<span class="type">Double</span>], <span class="type">Array</span>[<span class="type">Double</span>], <span class="type">Double</span>, <span class="type">Double</span>),</span><br><span class="line">    msg: <span class="type">Option</span>[(<span class="type">Long</span>, <span class="type">Double</span>)]) =&gt;</span><br><span class="line">    (vd._1, vd._2, msg.get._2 / msg.get._1 - u, <span class="number">1.0</span> / scala.math.sqrt(msg.get._1))</span><br><span class="line">&#125;.cache()</span><br><span class="line">materialize(gJoinT0)</span><br><span class="line">g.unpersist()</span><br><span class="line">g = gJoinT0</span><br></pre></td></tr></table></figure>
+<ol>
+<li>9-12: 首先计算 μ, 在输入的 RDD 上作简单的 MapReduce 即可</li>
+<li>14-17: 从边生成图 g，节点的属性全部为 defaultF 函数生成的随机初始值，将图进行存储，并释放边的 RDD （后续类似操作的描述在下文中省略）</li>
+<li>19-22: 通过聚合消息，得到一个拓扑一致的图，图中的节点属性为 <code>(num(rates), sum(rates))</code>，用于计算个体均值来初始化 $b_i = \sum(r_{*i})/num(r_{*i}) - u, b_u = \sum(r_{u*})/num(r_{u*}) - u$ （事实上并不是图，而是一个包含了节点 ID 及其接收到的消息的 RDD，具体的类型请参见官方文档）</li>
+<li>24-31: 通过将两个图进行合并，更新 g 中对应的属性值，函数无副作用，因此要重命名</li>
+</ol>
+<h3 id="Trainning-Through-Messages"><a href="#Trainning-Through-Messages" class="headerlink" title="Trainning Through Messages"></a>Trainning Through Messages</h3><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sendMsgTrainF</span></span>(conf: <span class="type">Conf</span>, u: <span class="type">Double</span>)</span><br><span class="line">    (ctx: <span class="type">EdgeContext</span>[</span><br><span class="line">        (<span class="type">Array</span>[<span class="type">Double</span>], <span class="type">Array</span>[<span class="type">Double</span>], <span class="type">Double</span>, <span class="type">Double</span>),</span><br><span class="line">        <span class="type">Double</span>,</span><br><span class="line">        (<span class="type">Array</span>[<span class="type">Double</span>], <span class="type">Array</span>[<span class="type">Double</span>], <span class="type">Double</span>)]) &#123;</span><br><span class="line">    <span class="keyword">val</span> (usr, itm) = (ctx.srcAttr, ctx.dstAttr)</span><br><span class="line">    <span class="keyword">val</span> (p, q) = (usr._1, itm._1)</span><br><span class="line">    <span class="keyword">val</span> rank = p.length</span><br><span class="line">    <span class="keyword">var</span> pred = u + usr._3 + itm._3 + blas.ddot(rank, q, <span class="number">1</span>, usr._2, <span class="number">1</span>)</span><br><span class="line">    pred = math.max(pred, conf.minVal)</span><br><span class="line">    pred = math.min(pred, conf.maxVal)</span><br><span class="line">    <span class="keyword">val</span> err = ctx.attr - pred</span><br><span class="line">    <span class="comment">// updateP = (err * q - conf.gamma7 * p) * conf.gamma2</span></span><br><span class="line">    <span class="keyword">val</span> updateP = q.clone()</span><br><span class="line">    blas.dscal(rank, err * conf.gamma2, updateP, <span class="number">1</span>)</span><br><span class="line">    blas.daxpy(rank, -conf.gamma7 * conf.gamma2, p, <span class="number">1</span>, updateP, <span class="number">1</span>)</span><br><span class="line">    <span class="comment">// updateQ = (err * usr._2 - conf.gamma7 * q) * conf.gamma2</span></span><br><span class="line">    <span class="keyword">val</span> updateQ = usr._2.clone()</span><br><span class="line">    blas.dscal(rank, err * conf.gamma2, updateQ, <span class="number">1</span>)</span><br><span class="line">    blas.daxpy(rank, -conf.gamma7 * conf.gamma2, q, <span class="number">1</span>, updateQ, <span class="number">1</span>)</span><br><span class="line">    <span class="comment">// updateY = (err * usr._4 * q - conf.gamma7 * itm._2) * conf.gamma2</span></span><br><span class="line">    <span class="keyword">val</span> updateY = q.clone()</span><br><span class="line">    blas.dscal(rank, err * usr._4 * conf.gamma2, updateY, <span class="number">1</span>)</span><br><span class="line">    blas.daxpy(rank, -conf.gamma7 * conf.gamma2, itm._2, <span class="number">1</span>, updateY, <span class="number">1</span>)</span><br><span class="line">    ctx.sendToSrc((updateP, updateY, (err - conf.gamma6 * usr._3) * conf.gamma1))</span><br><span class="line">    ctx.sendToDst((updateQ, updateY, (err - conf.gamma6 * itm._3) * conf.gamma1))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>该函数的作用是利用上边分析得到的学习公式，以边为单位，以消息的形式，逐个对节点参数进行调整</li>
+<li>此处仅仅是计算更新，发送消息，稍后进行消息的聚合，参数的更新</li>
+<li>更新公式与上文完全对应，不再展开，有趣的是，原论文中的 lambda6 和 lambda7 在此处被混为了 gamma，事实上这并不符合规范，正则化参数通常应该写作 lambda，Whatever…</li>
+<li>参数 conf 为训练参数，包括：<ul>
+<li>rank: 表示隐藏特质的个数，即矩阵的维度 k</li>
+<li>maxIters: 迭代次数上限，此处的实现是确确实实地执行到该上限，不会提前判断是否收敛</li>
+<li>gamma1-2: 表示两个学习速率</li>
+<li>gamma6-7: 表示两个正则化参数</li>
+</ul>
+</li>
+</ul>
+<h3 id="Updating-Properties"><a href="#Updating-Properties" class="headerlink" title="Updating Properties"></a>Updating Properties</h3><p>执行如下的更新步骤 maxIters 次：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Phase 1, calculate pu + |N(u)|^(-0.5)*sum(y) for user nodes</span></span><br><span class="line">g.cache()</span><br><span class="line"><span class="keyword">val</span> t1 = g.aggregateMessages[<span class="type">Array</span>[<span class="type">Double</span>]](</span><br><span class="line">ctx =&gt; ctx.sendToSrc(ctx.dstAttr._2),</span><br><span class="line">(g1, g2) =&gt; &#123;</span><br><span class="line">    <span class="keyword">val</span> out = g1.clone()</span><br><span class="line">    blas.daxpy(out.length, <span class="number">1.0</span>, g2, <span class="number">1</span>, out, <span class="number">1</span>)</span><br><span class="line">    out</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">val</span> gJoinT1 = g.outerJoinVertices(t1) &#123;</span><br><span class="line">(vid: <span class="type">VertexId</span>, vd: (<span class="type">Array</span>[<span class="type">Double</span>], <span class="type">Array</span>[<span class="type">Double</span>], <span class="type">Double</span>, <span class="type">Double</span>),</span><br><span class="line">    msg: <span class="type">Option</span>[<span class="type">Array</span>[<span class="type">Double</span>]]) =&gt;</span><br><span class="line">    <span class="keyword">if</span> (msg.isDefined) &#123;</span><br><span class="line">    <span class="keyword">val</span> out = vd._1.clone()</span><br><span class="line">    blas.daxpy(out.length, vd._4, msg.get, <span class="number">1</span>, out, <span class="number">1</span>)</span><br><span class="line">    (vd._1, out, vd._3, vd._4)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    vd</span><br><span class="line">    &#125;</span><br><span class="line">&#125;.cache()</span><br><span class="line">materialize(gJoinT1)</span><br><span class="line">g.unpersist()</span><br><span class="line">g = gJoinT1</span><br><span class="line"></span><br><span class="line"><span class="comment">// Phase 2, update p for user nodes and q, y for item nodes</span></span><br><span class="line">g.cache()</span><br><span class="line"><span class="keyword">val</span> t2 = g.aggregateMessages(</span><br><span class="line">sendMsgTrainF(conf, u),</span><br><span class="line">(g1: (<span class="type">Array</span>[<span class="type">Double</span>], <span class="type">Array</span>[<span class="type">Double</span>], <span class="type">Double</span>), g2: (<span class="type">Array</span>[<span class="type">Double</span>], <span class="type">Array</span>[<span class="type">Double</span>], <span class="type">Double</span>)) =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">val</span> out1 = g1._1.clone()</span><br><span class="line">    blas.daxpy(out1.length, <span class="number">1.0</span>, g2._1, <span class="number">1</span>, out1, <span class="number">1</span>)</span><br><span class="line">    <span class="keyword">val</span> out2 = g2._2.clone()</span><br><span class="line">    blas.daxpy(out2.length, <span class="number">1.0</span>, g2._2, <span class="number">1</span>, out2, <span class="number">1</span>)</span><br><span class="line">    (out1, out2, g1._3 + g2._3)</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">val</span> gJoinT2 = g.outerJoinVertices(t2) &#123;</span><br><span class="line">(vid: <span class="type">VertexId</span>,</span><br><span class="line">    vd: (<span class="type">Array</span>[<span class="type">Double</span>], <span class="type">Array</span>[<span class="type">Double</span>], <span class="type">Double</span>, <span class="type">Double</span>),</span><br><span class="line">    msg: <span class="type">Option</span>[(<span class="type">Array</span>[<span class="type">Double</span>], <span class="type">Array</span>[<span class="type">Double</span>], <span class="type">Double</span>)]) =&gt; &#123;</span><br><span class="line">    <span class="keyword">val</span> out1 = vd._1.clone()</span><br><span class="line">    blas.daxpy(out1.length, <span class="number">1.0</span>, msg.get._1, <span class="number">1</span>, out1, <span class="number">1</span>)</span><br><span class="line">    <span class="keyword">val</span> out2 = vd._2.clone()</span><br><span class="line">    blas.daxpy(out2.length, <span class="number">1.0</span>, msg.get._2, <span class="number">1</span>, out2, <span class="number">1</span>)</span><br><span class="line">    (out1, out2, vd._3 + msg.get._3, vd._4)</span><br><span class="line">&#125;</span><br><span class="line">&#125;.cache()</span><br><span class="line">materialize(gJoinT2)</span><br><span class="line">g.unpersist()</span><br><span class="line">g = gJoinT2</span><br></pre></td></tr></table></figure>
+<ol>
+<li>首先将与某个用户节点相连的所有电影节点的属性2，即 $y_i$ 进行聚合以更新用户属性2（参见上文）<ol>
+<li>每个 Triplet 向其源节点（用户）发送其目标节点（电影）的属性2，见第4行</li>
+<li>用户节点将收到的消息中的值进行聚合，此处为向量求和</li>
+<li>将取到的和乘以系数（此处为属性4），加上属性1，即得到更新后的属性2，见14-16行</li>
+</ol>
+</li>
+<li>对 sendMsgTrainF 的消息进行聚合，并更新各个 p, q, y, b<ol>
+<li>消息聚合时，消息中所带的更新值对应位置各自求和（p, q, y 为向量），见31-35行</li>
+<li>通过 join 将值更新至图 g，见41-45行</li>
+</ol>
+</li>
+</ol>
+<h3 id="Testing"><a href="#Testing" class="headerlink" title="Testing"></a>Testing</h3><figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// calculate error on training set</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sendMsgTestF</span></span>(conf: <span class="type">Conf</span>, u: <span class="type">Double</span>)</span><br><span class="line">    (ctx: <span class="type">EdgeContext</span>[(<span class="type">Array</span>[<span class="type">Double</span>], <span class="type">Array</span>[<span class="type">Double</span>], <span class="type">Double</span>, <span class="type">Double</span>), <span class="type">Double</span>, <span class="type">Double</span>]) &#123;</span><br><span class="line">    <span class="keyword">val</span> (usr, itm) = (ctx.srcAttr, ctx.dstAttr)</span><br><span class="line">    <span class="keyword">val</span> (p, q) = (usr._1, itm._1)</span><br><span class="line">    <span class="keyword">var</span> pred = u + usr._3 + itm._3 + blas.ddot(q.length, q, <span class="number">1</span>, usr._2, <span class="number">1</span>)</span><br><span class="line">    pred = math.max(pred, conf.minVal)</span><br><span class="line">    pred = math.min(pred, conf.maxVal)</span><br><span class="line">    <span class="keyword">val</span> err = (ctx.attr - pred) * (ctx.attr - pred)</span><br><span class="line">    ctx.sendToDst(err)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">g.cache()</span><br><span class="line"><span class="keyword">val</span> t3 = g.aggregateMessages[<span class="type">Double</span>](sendMsgTestF(conf, u), _ + _)</span><br><span class="line"><span class="keyword">val</span> gJoinT3 = g.outerJoinVertices(t3) &#123;</span><br><span class="line">    (vid: <span class="type">VertexId</span>, vd: (<span class="type">Array</span>[<span class="type">Double</span>], <span class="type">Array</span>[<span class="type">Double</span>], <span class="type">Double</span>, <span class="type">Double</span>), msg: <span class="type">Option</span>[<span class="type">Double</span>]) =&gt;</span><br><span class="line">    <span class="keyword">if</span> (msg.isDefined) (vd._1, vd._2, vd._3, msg.get) <span class="keyword">else</span> vd</span><br><span class="line">&#125;.cache()</span><br><span class="line">materialize(gJoinT3)</span><br><span class="line">g.unpersist()</span><br><span class="line">g = gJoinT3</span><br></pre></td></tr></table></figure>
+<ul>
+<li>将每部电影相关的误差平方和存入该节点的属性4（之前的这个域并无意义），见第17行</li>
+<li>这里有个问题，看到17行的代码，你可能会想，如果节点没有收到 msg，i.e. 这个电影没有人进行评价，那么它的属性4会保留原值，追溯代码发现这个原值在 Initialization 的第27行被定义，那么按说这个节点没人评价就没有连线，那么在 init 的时候也并不能收到消息，所以27行中的 msg 应该是 None，直接调用 get 难道不会抛出异常么？<ul>
+<li>事实上回忆图 g 的生成过程，它是通过一个包含所有边的 RDD 生成的，调用的是 fromEdges 方法，用这个方法生成的图中是不会有孤立点存在的，所以27行这么写是安全的，而这里的17行其实可以不进行条件判断，这样一边存在判断，另一边没有判断的做法反而让人困惑，Whatever…</li>
+</ul>
+</li>
+</ul>
+<h3 id="Misc"><a href="#Misc" class="headerlink" title="Misc"></a>Misc</h3><ul>
+<li>算法中的 materialize 函数在该文件中定义，写作两个 count 操作，为的是触发对应的顶点和边 RDD 的生成，我比较纳闷的是，materialize 随后 cache 应该是属于常见操作，为什么 RDD 不提供对应的接口通用呢？<ul>
+<li>单独调用 cache 方法只是说在该 RDD 被第一次真正计算的时候再进行 cache，是个 lazy 的操作，并不触发计算任务</li>
+</ul>
+</li>
+<li>我认为用图的方式对该算法进行抽象是符合直觉的，因为算法中涉及到对 N(u) 集合的计算，对应了图中的邻节点的概念，如果用普通的 RDD 操作，则需要涉及到一系列的 filter，直觉上性能是有损失的，当然具体的性能我没有调研，所以其实我只是瞎扯蛋。</li>
+</ul>
+<h2 id="Referrences"><a href="#Referrences" class="headerlink" title="Referrences"></a>Referrences</h2><ul>
+<li>Koren, Yehuda. “Factorization meets the neighborhood: a multifaceted collaborative filtering model.” Proceedings of the 14th ACM SIGKDD international conference on Knowledge discovery and data mining. ACM, 2008.</li>
+<li><a href="http://spark.apache.org/docs/latest/graphx-programming-guide.html" target="_blank" rel="external">GraphX</a></li>
+</ul>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/notes/">notes</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/tags/scala/">scala</a>, <a href="/tags/spark/">spark</a>, <a href="/tags/ml/">ml</a>
+  </div>
+
+        
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+    
+      <a class="addthis_button_pinterest_pinit" pi:pinit:layout="horizontal"></a>
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">Comments</h1>
+
+  
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+  
+</section>
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="q" value="site:farseer.cn">
+  </form>
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/PLT/">PLT</a><small>4</small></li>
+  
+    <li><a href="/categories/PRML/">PRML</a><small>4</small></li>
+  
+    <li><a href="/categories/TCS/">TCS</a><small>2</small></li>
+  
+    <li><a href="/categories/fun/">fun</a><small>4</small></li>
+  
+    <li><a href="/categories/notes/">notes</a><small>1</small></li>
+  
+    <li><a href="/categories/tips/">tips</a><small>2</small></li>
+  
+    <li><a href="/categories/tweak/">tweak</a><small>3</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/Coq/">Coq</a><small>1</small></li>
+  
+    <li><a href="/tags/EVA/">EVA</a><small>1</small></li>
+  
+    <li><a href="/tags/Information-theory/">Information theory</a><small>2</small></li>
+  
+    <li><a href="/tags/art/">art</a><small>1</small></li>
+  
+    <li><a href="/tags/distributed/">distributed</a><small>2</small></li>
+  
+    <li><a href="/tags/game/">game</a><small>1</small></li>
+  
+    <li><a href="/tags/haskell/">haskell</a><small>2</small></li>
+  
+    <li><a href="/tags/javascript/">javascript</a><small>2</small></li>
+  
+    <li><a href="/tags/lambda-calculus/">lambda-calculus</a><small>2</small></li>
+  
+    <li><a href="/tags/logic/">logic</a><small>2</small></li>
+  
+    <li><a href="/tags/math/">math</a><small>4</small></li>
+  
+    <li><a href="/tags/ml/">ml</a><small>4</small></li>
+  
+    <li><a href="/tags/paper/">paper</a><small>2</small></li>
+  
+    <li><a href="/tags/physics/">physics</a><small>1</small></li>
+  
+    <li><a href="/tags/scala/">scala</a><small>1</small></li>
+  
+    <li><a href="/tags/shell/">shell</a><small>1</small></li>
+  
+    <li><a href="/tags/spark/">spark</a><small>1</small></li>
+  
+    <li><a href="/tags/vim/">vim</a><small>2</small></li>
+  
+    <li><a href="/tags/vimperator/">vimperator</a><small>3</small></li>
+  
+    <li><a href="/tags/zsh/">zsh</a><small>1</small></li>
+  
+    <li><a href="/tags/ツッコミ/">ツッコミ</a><small>1</small></li>
+  
+    <li><a href="/tags/中二病/">中二病</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2016 Farseer He
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+<script type="text/javascript">
+var disqus_shortname = 'githubio';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+<!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+</body>
+</html>

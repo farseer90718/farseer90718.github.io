@@ -1,0 +1,608 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Don&#39;t Panic!</title>
+  <meta name="author" content="Farseer He">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+  <meta property="og:site_name" content="Don&#39;t Panic!"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Don&#39;t Panic!" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	ga('create', 'UA-40313156-5', 'auto');
+	ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Don&#39;t Panic!</a></h1>
+  <h2><a href="/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper">
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2016-03-02T07:07:47.000Z"><a href="/2016/03/02/Shannon-Hartley-theorem/">2016-03-02</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2016/03/02/Shannon-Hartley-theorem/">Shannon–Hartley theorem</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>有噪信道编码定理只适用于离散的数字信道，若要将其应用于真实的物理信道还需要费一番功夫。当然其结果就是著名的香农极限。</p>
+<blockquote>
+<p>对于某个物理信道，若：</p>
+<ol>
+<li>其带宽为 $W$.</li>
+<li>其噪声为<a href="https://en.wikipedia.org/wiki/Spectral_density#Power_spectral_density">功率谱密度</a>为 $N_0$ 的高斯<a href="https://en.wikipedia.org/wiki/White_noise">白噪声</a>。</li>
+<li>信号的平均功率为 $P$.</li>
+</ol>
+<p>则该信道的容量为 $C = W\log(1+\frac{P}{N_0W})$ 比特每秒。</p>
+</blockquote>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2016/03/02/Shannon-Hartley-theorem/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2016-02-24T12:10:38.000Z"><a href="/2016/02/24/The-noisy-channel-coding-theorem/">2016-02-24</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2016/02/24/The-noisy-channel-coding-theorem/">The Noisy-Channel Coding Theorem</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>这在信息论中是一个非常重要的定理，之所以会想到回头学习信息论的相关知识，是因为这与概率推理有直接的联系，通信的本质就是根据接收到的信道输Y出来推理信道的输入X的过程。</p>
+<h2 id="Definitions-amp-Notations"><a href="#Definitions-amp-Notations" class="headerlink" title="Definitions &amp; Notations"></a>Definitions &amp; Notations</h2><p>在正文开始之间先介绍一些定义和标识，顺便复习一下一些信息论中的基本结论。</p>
+<ul>
+<li>用 $X, Y, Z$ 来表示随机变量，$\mathcal{A}_{X}$ 表示变量的取值集合，$X^N$ 则表示将 $N$ 个独立的 $X$ 组成的整体作为一个随机变量</li>
+<li>信息熵： $H(X) = -\sum\limits_{p_i}\log{p_i}$</li>
+<li>条件信息熵： $H(X|Y) = \sum\limits_{y \in \mathcal{A}_Y} P(y) H(X|Y=y) = - \sum\limits_{xy \in \mathcal{A}_X\mathcal{A}_Y} P(x, y) \log{P(x|y)}$，满足:</li>
+</ul>
+<p>$H(X, Y) = H(X) + H(Y|X) = H(Y) + H(X|Y)$</p>
+<ul>
+<li>互信息： $I(X; Y) \equiv H(X) - H(X|Y) = H(Y) - H(Y|X)$，度量了两个随机变量相互蕴含了多少关于对方的信息</li>
+<li>信道容量： $C \equiv \underset{\mathcal{P}_X}{\mathrm{max}}\ I(X;Y)$，表示输出变量 $Y$ 最多能够蕴含多少关于输入 $X$ 的信息</li>
+</ul>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2016/02/24/The-noisy-channel-coding-theorem/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-10-09T16:00:00.000Z"><a href="/2015/10/10/fisher-information-and-crlb/">2015-10-10</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2015/10/10/fisher-information-and-crlb/">Fisher information and CRLB</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="Fisher-Information"><a href="#Fisher-Information" class="headerlink" title="Fisher Information"></a>Fisher Information</h2><p>又来抄录 Wikipedia 了，Fisher information 这个词我在好多地方见过，一直是不求甚解地意会着，最近发现这影响到一些东西的理解，于是开始翻看百科。</p>
+<p>言归正传，Fisher information 对于学统计的人应该很熟悉，用于描述可观测的变量 X 包含的对于决定它分布的参数 $\theta$ 的信息大小，直观地理解，如果 X 包含的关于 $\theta$ 的信息越多，后者就越确定，也就是其估计的方差越小。了解到这个信息就能得知，对于某些特定的分布模型，我们对于参数 $\theta$ 的极大似然估计 $\hat{\theta}_{ML}$ 的确信程度。</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2015/10/10/fisher-information-and-crlb/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-10-04T16:00:00.000Z"><a href="/2015/10/05/style-mod-for-goodreader-with-vimperator/">2015-10-05</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2015/10/05/style-mod-for-goodreader-with-vimperator/">Style mod for GoodReader with vimperator</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="The-Pain-Point"><a href="#The-Pain-Point" class="headerlink" title="The Pain Point"></a>The Pain Point</h2><p>Like I’ve mentioned in other posts, most of my reading is done with digital materials. And the application that I use most often for that purpose is named GoodReader(IOS platform). There certainly are better alternatives, nevertheless, I’m too lazy(poor) to alter.</p>
+<p>The old fashioned UI design of the app seems a little bit complicated and confusing, however the front-end page for file transfer via a WLAN is too simple to be satisfying.</p>
+<ul>
+<li>no design not all</li>
+<li>multi-file uploading not allowed</li>
+<li>progressing info is too inconspicuous</li>
+</ul>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2015/10/05/style-mod-for-goodreader-with-vimperator/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-09-21T16:00:00.000Z"><a href="/2015/09/22/the-hybrid-monte-carlo/">2015-09-22</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2015/09/22/the-hybrid-monte-carlo/">The hybrid Monte Carlo</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h2><p>作为一种先进的采样算法，在 PRML 11.5 中有较为详细的介绍，然而我反复细读了两遍才初窥门径，于是打算将其整理成文。</p>
+<h2 id="Goals-of-Sampling"><a href="#Goals-of-Sampling" class="headerlink" title="Goals of Sampling"></a>Goals of Sampling</h2><p>我决定从 Metropolis 算法开始介绍 Markov Chain Monte Carlo，然后是 Gibbs 采样，最后到混合 Monte Carlo，顺便作为笔记以便日后翻阅。</p>
+<p>不论是哪种算法，其目的都是一致的，即抽取出符合分布 $p(\mathbf{z})$ 的样本，同时，我们希望样本之间是无关的，即满足 <a href="https://en.wikipedia.org/wiki/Independent_and_identically_distributed_random_variables">i.i.d.</a> 条件。</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2015/09/22/the-hybrid-monte-carlo/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-09-12T16:00:00.000Z"><a href="/2015/09/13/hammersley-clifford-theorem/">2015-09-13</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2015/09/13/hammersley-clifford-theorem/">Hammersley Clifford Theorem</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h2><p>PRML 中 8.3.2 小节简单描述了 Markov Random Fields 的分解特性，其中最核心的部分就是 Hammersley Clifford Theorem, 然而它并没有证明这个定理，只是在末尾的时候提到了这个结论，导致我在阅读中间部分的时候一头雾水。好在我 google 到了一个<a href="http://web.kaist.ac.kr/~kyomin/Fall09MRF/Hammersley-Clifford_Theorem.pdf">优雅的证明</a>，顺便翻译在此。</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2015/09/13/hammersley-clifford-theorem/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-09-01T16:00:00.000Z"><a href="/2015/09/02/quosi-newton-methods/">2015-09-02</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2015/09/02/quosi-newton-methods/">Quosi Newton Methods</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h2><p>最近在以蜗牛般的速度啃 PRML。第五章提到了拟牛顿法，这玩意我之前大致意会过，并作了一些笔记，然而我完全无法回忆起来，于是翻出之前的笔记重新意会了一遍，顺便更正了之前一些不太正确的理解，总结整理成下文。</p>
+<h2 id="Newton’s-Method"><a href="#Newton’s-Method" class="headerlink" title="Newton’s Method"></a>Newton’s Method</h2><p>考虑求自变量 X 为 N 维向量的函数 $f(X)$ 的极值点问题。我们知道高中数学中的牛顿法可以用于求解函数0点的：$X_{k+1} = X_n - [J_f(X_k)] ^{-1}f(X_k)$. 那么可导函数的极值问题其实就是求其导函数的0点问题，同样可以用牛顿法求解。</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2015/09/02/quosi-newton-methods/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-08-21T16:00:00.000Z"><a href="/2015/08/22/add-toc-indexes-to-pdf/">2015-08-22</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2015/08/22/add-toc-indexes-to-pdf/">Add TOC indexes to PDF</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="PDF-books-without-Indexes-are-like-Planets-with-Individuals"><a href="#PDF-books-without-Indexes-are-like-Planets-with-Individuals" class="headerlink" title="PDF books without Indexes are like Planets with Individuals"></a>PDF books without Indexes are like Planets with Individuals</h2><p>I prefer e-books to paper books, actually I may have read only 1-2 paper books in recent 3 years, while e-books of a much larger amount. The pros of e-books are really obvious:</p>
+<ol>
+<li>portability</li>
+<li>context can be copied</li>
+<li>easy to manage</li>
+<li>easy to navigate</li>
+</ol>
+<p>I don’t want to argue about the superiorities here. I just wanna to convey that the 4th feature is a crucial one, and it is mainly achieved via indexes, bookmarks, reference links, etc. There’s no doubt that among those approaches, indexes play the most significant role. So I say that e-books without indexes are like planets with individuals, i.e. huge gaps among separated pieces of text.</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2015/08/22/add-toc-indexes-to-pdf/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-08-15T16:00:00.000Z"><a href="/2015/08/16/svd-implementation-in-graphx/">2015-08-16</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2015/08/16/svd-implementation-in-graphx/">SVD++ Implementation in GraphX</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="Clarification"><a href="#Clarification" class="headerlink" title="Clarification"></a>Clarification</h2><p>写完之后我突然发现这个标题看上去貌似有“以下实现是由本人完成的”这样的误导，所以特此澄清，下文出现的代码统统摘自<br> <a href="https://github.com/apache/spark.git">apache/spark</a>.</p>
+<h2 id="SVD-Intro"><a href="#SVD-Intro" class="headerlink" title="SVD++ Intro"></a>SVD++ Intro</h2><p>首先简单介绍 SVD++ 算法在协同过滤中的应用及其数学直觉。</p>
+<h3 id="SVD-in-CF"><a href="#SVD-in-CF" class="headerlink" title="SVD in CF"></a>SVD in CF</h3><p>考虑 CF 中最为常见的用户给电影评分的场景，我们需要一个数学模型来模拟用户给电影打分的场景，i.e. 对评分进行预测。</p>
+<p>一个 Naive 的方案可以是将评分矩阵看作是两个矩阵的乘积：</p>
+<p>$$<br>U = \begin{bmatrix}<br>u_{11} &amp; \cdots &amp; u_{1k} \\<br>\vdots &amp; \ddots &amp; \vdots \\<br>u_{m1} &amp; \cdots &amp; u_{mk}<br>\end{bmatrix}<br>\begin{bmatrix}<br>i_{11} &amp; \cdots &amp; i_{1n} \\<br>\vdots &amp; \ddots &amp; \vdots \\<br>i_{k1} &amp; \cdots &amp; i_{kn}<br>\end{bmatrix}<br>$$.</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2015/08/16/svd-implementation-in-graphx/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-08-02T16:00:00.000Z"><a href="/2015/08/03/cps-and-monads/">2015-08-03</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2015/08/03/cps-and-monads/">CPS and Monads</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="Aha"><a href="#Aha" class="headerlink" title="Aha"></a>Aha</h2><p>最近搬了个地儿，离开了生活了近6年的合肥。呆在合肥的时候不觉得她有什么不好，现在想想空气质量是真不照；呆在合肥的时候不觉得她有什么好，现在想想吃饭是真便宜。</p>
+<p>总之就是这段时间一堆烂事，导致前边挖下的坑没能及时填上。另外，随着研究方向的逐渐明确，也许不能再写这些“不务正业”的玩意了，也许会写点跟方向相关的内容，虽然我觉得这个方向上的工作纯忽悠，完全不值一提。我就是一个始终觉得别人研究的东西无比高大上，自己手上的东西都是crap的人。</p>
+<h2 id="Useful-Monads-with-Interpretor"><a href="#Useful-Monads-with-Interpretor" class="headerlink" title="Useful Monads with Interpretor"></a>Useful Monads with Interpretor</h2><p>上一篇结尾提到的那篇论文总算是看完了。既然不能完全消化，吸收，然后拉出屎来；那么我就简单粗暴地吞下去，嚼一嚼，吐出来好了（美其名曰翻译+注释）。</p>
+<p>论文很长，肯定不能逐字翻，我主要关心的是第三章，但是直接跳过前边又不行，所以先简单节选些第二章的内容。</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2015/08/03/cps-and-monads/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+<nav id="pagination">
+  
+  
+    <a href="/page/2/" class="alignright next">Next</a>
+  
+  <div class="clearfix"></div>
+</nav></div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="q" value="site:farseer.cn">
+  </form>
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/PLT/">PLT</a><small>4</small></li>
+  
+    <li><a href="/categories/PRML/">PRML</a><small>4</small></li>
+  
+    <li><a href="/categories/TCS/">TCS</a><small>2</small></li>
+  
+    <li><a href="/categories/fun/">fun</a><small>4</small></li>
+  
+    <li><a href="/categories/notes/">notes</a><small>1</small></li>
+  
+    <li><a href="/categories/tips/">tips</a><small>2</small></li>
+  
+    <li><a href="/categories/tweak/">tweak</a><small>3</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/Coq/">Coq</a><small>1</small></li>
+  
+    <li><a href="/tags/EVA/">EVA</a><small>1</small></li>
+  
+    <li><a href="/tags/Information-theory/">Information theory</a><small>2</small></li>
+  
+    <li><a href="/tags/art/">art</a><small>1</small></li>
+  
+    <li><a href="/tags/distributed/">distributed</a><small>2</small></li>
+  
+    <li><a href="/tags/game/">game</a><small>1</small></li>
+  
+    <li><a href="/tags/haskell/">haskell</a><small>2</small></li>
+  
+    <li><a href="/tags/javascript/">javascript</a><small>2</small></li>
+  
+    <li><a href="/tags/lambda-calculus/">lambda-calculus</a><small>2</small></li>
+  
+    <li><a href="/tags/logic/">logic</a><small>2</small></li>
+  
+    <li><a href="/tags/math/">math</a><small>4</small></li>
+  
+    <li><a href="/tags/ml/">ml</a><small>4</small></li>
+  
+    <li><a href="/tags/paper/">paper</a><small>2</small></li>
+  
+    <li><a href="/tags/physics/">physics</a><small>1</small></li>
+  
+    <li><a href="/tags/scala/">scala</a><small>1</small></li>
+  
+    <li><a href="/tags/shell/">shell</a><small>1</small></li>
+  
+    <li><a href="/tags/spark/">spark</a><small>1</small></li>
+  
+    <li><a href="/tags/vim/">vim</a><small>2</small></li>
+  
+    <li><a href="/tags/vimperator/">vimperator</a><small>3</small></li>
+  
+    <li><a href="/tags/zsh/">zsh</a><small>1</small></li>
+  
+    <li><a href="/tags/ツッコミ/">ツッコミ</a><small>1</small></li>
+  
+    <li><a href="/tags/中二病/">中二病</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2016 Farseer He
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+<script type="text/javascript">
+var disqus_shortname = 'githubio';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+<!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+</body>
+</html>

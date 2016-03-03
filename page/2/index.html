@@ -1,0 +1,585 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Page 2 | Don&#39;t Panic!</title>
+  <meta name="author" content="Farseer He">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+  <meta property="og:site_name" content="Don&#39;t Panic!"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Don&#39;t Panic!" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	ga('create', 'UA-40313156-5', 'auto');
+	ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Don&#39;t Panic!</a></h1>
+  <h2><a href="/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper">
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-07-08T16:00:00.000Z"><a href="/2015/07/09/monads-in-category-theory-and-monads-in-haskell/">2015-07-09</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2015/07/09/monads-in-category-theory-and-monads-in-haskell/">Monads in Category Theory and Monads in Haskell</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="Aha"><a href="#Aha" class="headerlink" title="Aha"></a>Aha</h2><p>最近尝试学习一些基础的范畴论，无奈资质愚钝，浅尝则止了。不过还是想通过这篇文章来加深一下对某些东西的粗浅认识。</p>
+<p>我在看monads的定义的时候，总是无法将范畴论中的那套东西联系到haskell中的定义上，为此，我查阅了一些资料，花了很多时间去思考（所谓勤能补拙），总算是让自己相信了。</p>
+<h2 id="Monads-in-Category-Theory"><a href="#Monads-in-Category-Theory" class="headerlink" title="Monads in Category Theory"></a>Monads in Category Theory</h2><p>从什么地方写起，这是个问题，想了想决定跳过category的定义，直接从functor说起，因为cat的定义比较简单，一搜一看就能理解，而functor在我之前的文章中对它的描述有偏差，这边顺便就纠正了。</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2015/07/09/monads-in-category-theory-and-monads-in-haskell/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-06-27T16:00:00.000Z"><a href="/2015/06/28/coprime-probabilities/">2015-06-28</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2015/06/28/coprime-probabilities/">Coprime probabilities</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="A-Conclusion"><a href="#A-Conclusion" class="headerlink" title="A Conclusion"></a>A Conclusion</h2><p>听说了一个有趣的结论：两个随机的正整数互质的概率为 $\frac{6}{\pi ^2}$，对它的推导过程感到好奇，于是通过wikipedia学习了一些数学知识…</p>
+<h2 id="Basic-Analysis"><a href="#Basic-Analysis" class="headerlink" title="Basic Analysis"></a>Basic Analysis</h2><p>何为“两个随机正整数”？正整数集合的度是无穷大，所以要使得所有整数对出现的概率相同是无法达到的。</p>
+<p>问题需要如此描述：我们用 $Z_2(t)$ 表示互质整数对的个数，其中每个整数对中的两个整数都不大于t，于是所要求的概率即为 $limit_{t \to \infty} \frac{Z_2(t)}{t ^2} $。</p>
+<p>我们忽略这个定义，直接考虑无穷的情形，两个整数互质，说明对任意的质数p，它们不能同时被p整除；一个随机正整数被p整除的概率为$1/p$，于是它们不同时被p整除的概率为$1-1/p ^2$，对于不同的质数p，相互独立；于是所求即为：</p>
+<p>$$<br>\prod\limits_{prime\ p} (1-1/p ^2)\tag{1}\label{eq1}<br>$$.</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2015/06/28/coprime-probabilities/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-05-16T16:00:00.000Z"><a href="/2015/05/17/the-byzantine-generals-problem/">2015-05-17</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2015/05/17/the-byzantine-generals-problem/">The Byzantine Generals Problem</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="闲扯"><a href="#闲扯" class="headerlink" title="闲扯"></a>闲扯</h2><p>之前挖下的坑还没有填完，但在此之前，由于各种原因，我决定先写些有关拜占庭将军问题的东西。</p>
+<p>拜占庭将军问题是可信计算中的一个非常经典的问题，这个名称我估计是源于Lamport对古罗马的莫名情愫。关于历史的问题，我不懂就不逼逼了。</p>
+<h2 id="Problem-Description"><a href="#Problem-Description" class="headerlink" title="Problem Description"></a>Problem Description</h2><p>拜占庭军队有许多分支，驻扎在敌人城外，每一分支由各自的将军指挥。将军们只能靠通讯员进行通讯。在观察了敌人以后，忠诚的将军们必须制订一个统一的行动计划。然而，这些将军中有叛徒。叛徒试图扰乱计划的制定。</p>
+<p>因此，能够解决该问题的正确算法必须保证如下两点：</p>
+<ol>
+<li>所有忠诚的将军能够达成相同的行动计划。</li>
+<li>少数的叛徒不能使忠诚的将军做出错误的计划。</li>
+</ol>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2015/05/17/the-byzantine-generals-problem/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-05-02T16:00:00.000Z"><a href="/2015/05/03/the-church-rosser-theorem/">2015-05-03</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2015/05/03/the-church-rosser-theorem/">The Church-Rosser Theorem</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="闲扯"><a href="#闲扯" class="headerlink" title="闲扯"></a>闲扯</h2><p>最近写的尽是些有的没的，完全没有干货。怎么说，最近考虑在思考人生，价值观在改变，简而言之就是又退化到科学&gt;&gt;技术的中二阶段。一方面看到现阶段所谓“技术产物”的各种各样的问题，另一方面由于自身智力，能力，精力的限制，没有办法对其进行改进和提升，只能采取粗暴的、眼不见为净的鸵鸟政策。其实我知道自己是躲不掉的（当然我说的是找工作），但是还是想在不得不面对之前关心些别的，或者说补救些别的，能补多少是多少吧。年轻的时候有大把时间，却不想念书，现在老了，想念书了，却没有多少时间了（有时间也架不住嗜睡）。</p>
+<p>Anyway, 我接下来准备翻译大段的关于无类型lambda-calculus中Church-Rosser定理的证明，为什么要做这么无聊的事情？因为我觉得有趣…为什么不先完善下之前对STLC的证明？1.不求甚解是我的一贯毛（feng）病（ge）；2.这个定理在它的证明中会有一丢丢的作用，Normalization证明的补充会在之后进行。</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2015/05/03/the-church-rosser-theorem/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-04-23T16:00:00.000Z"><a href="/2015/04/24/proof-of-normalization-property-in-stlc/">2015-04-24</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2015/04/24/proof-of-normalization-property-in-stlc/">Proof of weak normalization property in STLC</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h2><p>十多天前我在software fundation的练习中过了一遍有关STLC的weak normalization性质的<a href="https://github.com/blindFS/Software-Foundations-Solutions/blob/master/Norm.v">证明</a>。<br>当时有些任务心态，想着把上面留的坑填完就完事了，好多大段的引理证明不仅没仔细看，也没有细想引理的用处。</p>
+<p>前几天无意中翻到了王垠的<a href="http://www.yinwang.org/blog-cn/2013/04/26/reason-and-proof/">一篇老文</a>，于是试图回忆这个定理的证明过程，却发现脑中是空白的，无奈翻出之前的形式化证明从头屡一屡。</p>
+<p>由于我的表述能力的限制，以及我对此证明本质的粗浅认识，这将很难成为一篇好的科普文。另外此文只涉及到关于此性质的核心证明(very informal)，其中可能涉及到许多前文已经证明过的引理，如果想了解完整的证明，请参照software fundation或相关文献。</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2015/04/24/proof-of-normalization-property-in-stlc/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-03-22T16:00:00.000Z"><a href="/2015/03/23/about-flp-proof/">2015-03-23</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2015/03/23/about-flp-proof/">About FLP Proof</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="Consensus-Problem"><a href="#Consensus-Problem" class="headerlink" title="Consensus Problem"></a>Consensus Problem</h2><p>在分布式系统中，一致性问题的解决是众多分布式算法得以工作的前提条件。这里所说的解决依赖于对系统模型的假设，事实上即便是在工业界得到广泛使用的著名的Paxos算法，也不能完全地解决一致性问题。</p>
+<h3 id="Importance"><a href="#Importance" class="headerlink" title="Importance"></a>Importance</h3><p>一致性问题是具有普遍意义的。举例来说，一个leader选举算法的safty属性要求算法结束时，所有节点公认某个一致的节点作为其leader；再比如，在一个分布式数据库系统中，某个数据具有多个拷贝，当数据发生变化时，所有这些拷贝都需要做出一致的调整(ACID中的C)。</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2015/03/23/about-flp-proof/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-02-17T16:00:00.000Z"><a href="/2015/02/18/auto-fuzsh-customization/">2015-02-18</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2015/02/18/auto-fuzsh-customization/">Auto-fu.zsh customization</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="大概是这么一回事"><a href="#大概是这么一回事" class="headerlink" title="大概是这么一回事"></a>大概是这么一回事</h2><p>放假闲的慌，于是开始折腾些有的没的，忘记是怎么看到<a href="https://github.com/hchbaw/auto-fu.zsh">这个repo</a>的了…觉得很好玩的样子，就打算试试看。但是折腾的过程中发现，要让这个插件跟我原有的配置共洽，稍稍有点费劲，于是在此记录下我的无聊行径。</p>
+<h2 id="选择合适的branch"><a href="#选择合适的branch" class="headerlink" title="选择合适的branch"></a>选择合适的branch</h2><p>一开始发现它和zsh-syntax-highlighting闹矛盾，翻了下github的issue，发现有两个branch解决了这个问题，分别是pu和thb，没搞懂名字怎么来的…</p>
+<p>pu比thb多了自动纠正，其实我对自动纠正挺反感的，无奈的是thb有些其它的bug，比如在按下tab补全路径的时候会多一个<code>/</code>，总之就是我选择了pu这个分支。</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2015/02/18/auto-fuzsh-customization/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-02-06T16:00:00.000Z"><a href="/2015/02/07/isomorphism-between-monument-valley--masterpieces-of-mcescher/">2015-02-07</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2015/02/07/isomorphism-between-monument-valley--masterpieces-of-mcescher/">Isomorphisms between Monument Valley &amp; masterpieces of M.C.Escher</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h2><p>博客写了1.5年左右的时间了，内容尽是些无足轻重的雕虫小技，与其说是博客，不如唤作笔记来的贴切。每当码字的时候，潜意识中总是明白光标下的东西不会被人关注，因此不论是标点、措辞、内容的逻辑性……都全然不顾，敲下的东西更像是当前的我和日后翻阅时的我之间的对话。它们的糟糕程度正好就反映了我的懒散程度。</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2015/02/07/isomorphism-between-monument-valley--masterpieces-of-mcescher/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-02-03T16:00:00.000Z"><a href="/2015/02/04/vimperator-tips-2/">2015-02-04</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2015/02/04/vimperator-tips-2/">Vimperator tips 2</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="Ver-3-8-3-release-gi触发错误"><a href="#Ver-3-8-3-release-gi触发错误" class="headerlink" title="Ver 3.8.3 (release) gi触发错误"></a>Ver 3.8.3 (release) gi触发错误</h2><p>按键gi的作用是focus到当前页面的input/textarea/iframe，即进入类似vim中的input模式。<br>在该版本中概率出错(xpath相关，具体记不得了)。<br>解决办法很简单，安装<a href="https://github.com/vimperator/vimperator-labs">git版本</a>就可以了。<br>刚开始看vimperator的源码，尚且不熟悉架构，但是buffer相关的默认按键执行的操作可以在<br><code>/common/content/buffer.js</code>中找到。概述信息可以通过mappings module获取，通过<br><code>:echo mappings.get(0, &#39;gi&#39;, &#39;.*&#39;)</code></p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2015/02/04/vimperator-tips-2/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-01-26T16:00:00.000Z"><a href="/2015/01/27/vimperator-tips/">2015-01-27</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2015/01/27/vimperator-tips/">Vimperator tips</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="vimperator是什么鬼？"><a href="#vimperator是什么鬼？" class="headerlink" title="vimperator是什么鬼？"></a>vimperator是什么鬼？</h2><p>对于找到这的人来说，这是个无聊的问题，没办法，好久没写东西了，缺乏基本的文字内容组织能力，<br>只好遵循渐进的法则…</p>
+<p>vimperator 是一个firefox扩展，有很强的可定制性，很好玩，神器，以上。<br>类似的东西有<a href="http://5digits.org/pentadactyl/">Pentadactyl</a>(不支持最新的ff),<a href="https://github.com/akhodakivskiy/VimFx">VimFx</a>(功能比较简单)。</p>
+<p>好吧，接下来我分享一些vimperator的<a href="https://github.com/blindFS/dotfiles/blob/master/.vimperatorrc">配置</a>。</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2015/01/27/vimperator-tips/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+<nav id="pagination">
+  
+    <a href="/" class="alignleft prev">Prev</a>
+  
+  
+  <div class="clearfix"></div>
+</nav></div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="q" value="site:farseer.cn">
+  </form>
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/PLT/">PLT</a><small>4</small></li>
+  
+    <li><a href="/categories/PRML/">PRML</a><small>4</small></li>
+  
+    <li><a href="/categories/TCS/">TCS</a><small>2</small></li>
+  
+    <li><a href="/categories/fun/">fun</a><small>4</small></li>
+  
+    <li><a href="/categories/notes/">notes</a><small>1</small></li>
+  
+    <li><a href="/categories/tips/">tips</a><small>2</small></li>
+  
+    <li><a href="/categories/tweak/">tweak</a><small>3</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/Coq/">Coq</a><small>1</small></li>
+  
+    <li><a href="/tags/EVA/">EVA</a><small>1</small></li>
+  
+    <li><a href="/tags/Information-theory/">Information theory</a><small>2</small></li>
+  
+    <li><a href="/tags/art/">art</a><small>1</small></li>
+  
+    <li><a href="/tags/distributed/">distributed</a><small>2</small></li>
+  
+    <li><a href="/tags/game/">game</a><small>1</small></li>
+  
+    <li><a href="/tags/haskell/">haskell</a><small>2</small></li>
+  
+    <li><a href="/tags/javascript/">javascript</a><small>2</small></li>
+  
+    <li><a href="/tags/lambda-calculus/">lambda-calculus</a><small>2</small></li>
+  
+    <li><a href="/tags/logic/">logic</a><small>2</small></li>
+  
+    <li><a href="/tags/math/">math</a><small>4</small></li>
+  
+    <li><a href="/tags/ml/">ml</a><small>4</small></li>
+  
+    <li><a href="/tags/paper/">paper</a><small>2</small></li>
+  
+    <li><a href="/tags/physics/">physics</a><small>1</small></li>
+  
+    <li><a href="/tags/scala/">scala</a><small>1</small></li>
+  
+    <li><a href="/tags/shell/">shell</a><small>1</small></li>
+  
+    <li><a href="/tags/spark/">spark</a><small>1</small></li>
+  
+    <li><a href="/tags/vim/">vim</a><small>2</small></li>
+  
+    <li><a href="/tags/vimperator/">vimperator</a><small>3</small></li>
+  
+    <li><a href="/tags/zsh/">zsh</a><small>1</small></li>
+  
+    <li><a href="/tags/ツッコミ/">ツッコミ</a><small>1</small></li>
+  
+    <li><a href="/tags/中二病/">中二病</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2016 Farseer He
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+<script type="text/javascript">
+var disqus_shortname = 'githubio';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+<!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+</body>
+</html>

@@ -1,0 +1,352 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>The Noisy-Channel Coding Theorem | Don&#39;t Panic!</title>
+  <meta name="author" content="Farseer He">
+  
+  <meta name="description" content="这在信息论中是一个非常重要的定理，之所以会想到回头学习信息论的相关知识，是因为这与概率推理有直接的联系，通信的本质就是根据接收到的信道输Y出来推理信道的输入X的过程。
+Definitions &amp;amp; Notations在正文开始之间先介绍一些定义和标识，顺便复习一下一些信息论中的基本结论。
+
+用 $X, Y, Z$ 来表示随机变量，$\mathcal{A}_{X}$ 表示变量的取值集合，$X^N$ 则表示将 $N$ 个独立的 $X$ 组成的整体作为一个随机变量
+信息熵： $H(X) = -\sum\limits_{p_i}\log{p_i}$
+条件信息熵： $H(X|Y) = \sum\limits_{y \in \mathcal{A}_Y} P(y) H(X|Y=y) = - \sum\limits_{xy \in \mathcal{A}_X\mathcal{A}_Y} P(x, y) \log{P(x|y)}$，满足:
+
+$H(X, Y) = H(X) + H(Y|X) = H(Y) + H(X|Y)$
+
+互信息： $I(X; Y) \equiv H(X) - H(X|Y) = H(Y) - H(Y|X)$，度量了两个随机变量相互蕴含了多少关于对方的信息
+信道容量： $C \equiv \underset{\mathcal{P}_X}{\mathrm{max}}\ I(X;Y)$，表示输出变量 $Y$ 最多能够蕴含多少关于输入 $X$ 的信息">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="The Noisy-Channel Coding Theorem"/>
+  <meta property="og:site_name" content="Don&#39;t Panic!"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Don&#39;t Panic!" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	ga('create', 'UA-40313156-5', 'auto');
+	ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Don&#39;t Panic!</a></h1>
+  <h2><a href="/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2016-02-24T12:10:38.000Z"><a href="/2016/02/24/The-noisy-channel-coding-theorem/">2016-02-24</a></time>
+      
+      
+  
+    <h1 class="title">The Noisy-Channel Coding Theorem</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>这在信息论中是一个非常重要的定理，之所以会想到回头学习信息论的相关知识，是因为这与概率推理有直接的联系，通信的本质就是根据接收到的信道输Y出来推理信道的输入X的过程。</p>
+<h2 id="Definitions-amp-Notations"><a href="#Definitions-amp-Notations" class="headerlink" title="Definitions &amp; Notations"></a>Definitions &amp; Notations</h2><p>在正文开始之间先介绍一些定义和标识，顺便复习一下一些信息论中的基本结论。</p>
+<ul>
+<li>用 $X, Y, Z$ 来表示随机变量，$\mathcal{A}_{X}$ 表示变量的取值集合，$X^N$ 则表示将 $N$ 个独立的 $X$ 组成的整体作为一个随机变量</li>
+<li>信息熵： $H(X) = -\sum\limits_{p_i}\log{p_i}$</li>
+<li>条件信息熵： $H(X|Y) = \sum\limits_{y \in \mathcal{A}_Y} P(y) H(X|Y=y) = - \sum\limits_{xy \in \mathcal{A}_X\mathcal{A}_Y} P(x, y) \log{P(x|y)}$，满足:</li>
+</ul>
+<p>$H(X, Y) = H(X) + H(Y|X) = H(Y) + H(X|Y)$</p>
+<ul>
+<li>互信息： $I(X; Y) \equiv H(X) - H(X|Y) = H(Y) - H(Y|X)$，度量了两个随机变量相互蕴含了多少关于对方的信息</li>
+<li>信道容量： $C \equiv \underset{\mathcal{P}_X}{\mathrm{max}}\ I(X;Y)$，表示输出变量 $Y$ 最多能够蕴含多少关于输入 $X$ 的信息</li>
+</ul>
+<a id="more"></a>
+<p>关于信息熵和互信息的图示如下：</p>
+<p><img src="/assets/images/article/entropy.png" alt="info"></p>
+<h2 id="Source-Coding-Theorem"><a href="#Source-Coding-Theorem" class="headerlink" title="Source Coding Theorem"></a>Source Coding Theorem</h2><p>既然信息熵用于表示某个随机变量包含的信息量的期望值，那么想来应该有办法用 $\lceil H(X) \rceil$ 个 bits 来编码随机事件 $X$ 喽？<br>可是对于单个可能有 $|\mathcal{A}_X|$ 个取值的随机变量，我们至少需要 $\lceil \log_2{\mathcal{A}_X} \rceil$ 个比特来对其所有可能的取值进行编码，才能保证不丢失信息。<br>考虑 $X^N$，同样，若要做到完全不丢失信息，至少需要 $\lceil N\log_2{\mathcal{A}_X} \rceil$ 个比特，但是当 $N$ 足够大时，$X^N$ 的一大部分可能的取值对应了非常小的概率，以至于我们只需要牺牲非常小的信息就能够将这些低概率的取值从我们的编码中排除出去，从而将这个信源压缩到将近 $NH(X)$ 比特。因此，信息熵也表示了对应的压缩极限。<br>回过头来给出信源编码定理的文字描述：</p>
+<blockquote>
+<p>N 个 i.i.d. 的随机变量（每个随机变量的信息熵为 H(X)），在 N 足够大时可以被几乎无损地压缩到 NH(X) 个比特；相反地，如果少于上述值，则信息几乎一定会有丢失。</p>
+</blockquote>
+<p>显然上面的叙述十分地非正式，至于严格的数学定义和证明，由于过于迂腐，就此略去，请参见文末给出的参考书的第四章。但是下面将要提到并证明一个重要的结论，该结论将能够非正式地导出信源编码定理的前半部分，并且能够给出一个具体的编码方案。</p>
+<h3 id="‘Asymptotic-equipartition’-principle"><a href="#‘Asymptotic-equipartition’-principle" class="headerlink" title="‘Asymptotic equipartition’ principle"></a>‘Asymptotic equipartition’ principle</h3><blockquote>
+<p>对于 $X^N$ 来说，当 $N$ 足够大时，其具体取值 $\mathbf{x} = (x_1, x_2, …, x_N)$ 几乎必然落在 $\mathcal{A}_X^N$ 的一个大小为 $2^{NH(X)}$ 的子集 $T$ 中，并且取其中的任意元素的概率”接近” $2^{-NH(X)}$。</p>
+</blockquote>
+<p>显然如果上述性质成立，则只需对 $T$ 中的元素进行编码，也就意味着压缩极限是可以被无限趋近的。为了证明上面的描述，我们需要给出寻找这样的集合 $T$ 的具体方法，这涉及到一个 <strong>typical set</strong> 的概念，定义如下：</p>
+<p>$$<br>T_{N\beta} \equiv \left\{\mathbf{x} \in \mathcal{A}_X: |\frac1N \log_2{\frac{1}{P(\mathbf{x})}} - H| &lt; \beta\right\}<br>$$</p>
+<p>也就是找那些信息量最接近信息熵的取值，注意这些取值并不是可能性最高的那部分。为了证明 $T_{N\beta}$ 满足需求，我们通过<a href="https://en.wikipedia.org/wiki/Chebyshev%27s_inequality#Probabilistic_statement" target="_blank" rel="external">切比雪夫不等式</a>得到：</p>
+<p>$$<br>P(\mathbf{x} \in T_{N\beta}) \geq 1 - \frac{Var[\log_2(1/P(X))]}{\beta^2N}<br>$$</p>
+<p>显然当 $N \to \infty$ 时，$\mathbf{x}$ 几乎必然落入 $T_{N\beta}$ 中。而 $2^{-N(H + \beta)} &lt; P(\mathbf{x}) &lt; 2^{-N(H - \beta)}$，取相对于 $H$ 足够小的 $\beta$，则集合中的各元素的概率“相对近似”。</p>
+<h2 id="The-Theorem"><a href="#The-Theorem" class="headerlink" title="The Theorem"></a>The Theorem</h2><h3 id="Part-1"><a href="#Part-1" class="headerlink" title="Part 1"></a>Part 1</h3><p>有噪信道编码理论描述了对于有噪声无记忆的信道而言，在正确传递信息（不正确的情况稍后讨论）的前提下，平均每次使用信道所能传输的最大信息量。显然，根据信道容量的定义，这个量不会超过 $C$。而这个定理正是说明，这个极限是可以被无限趋近的。</p>
+<p>这个定理也可以这么理解，信道噪声导致每次传输只能获取信源的部分信息量，然而我们可以通过适当的冗余手段（LDPC, turbo code, etc.）使得平均下来，信道传递的有效信息的部分正好是我们希望传递的内容，从而保证正确性，而 $C$ 决定了冗余成分所占比重的下限。</p>
+<h4 id="Jointly-typical-sequences"><a href="#Jointly-typical-sequences" class="headerlink" title="Jointly-typical sequences"></a>Jointly-typical sequences</h4><p>为了寻找合适的编解码方案 $\mathcal{C}$，类似信源编码定理中的 <strong>typical set</strong>，需要定义 <strong>jointly-typical</strong> 的概念（后文简称 <strong>JT</strong>）。如果一对长度为 $N$ 的序列 $\mathbf{x}, \mathbf{y}$ 满足如下属性，就说他们是 <strong>JT</strong> 的：</p>
+<ol>
+<li>$\mathbf{x}$ 相对 $P(X)$ 是 typical 的，i.e., $|\frac1N\log{1/P(\mathbf{x})} - H(X)| &lt; \beta$, 下同；</li>
+<li>$\mathbf{y}$ 相对 $P(Y)$ 是 typical 的；</li>
+<li>$\mathbf{x, y}$ 相对 $P(X, Y)$ 是 typical 的。</li>
+</ol>
+<p>类似于 <strong>‘asymptotic equipartition’ principle</strong>, 有如下的 <strong>JT theorem</strong>:</p>
+<blockquote>
+<p>对于从 $(XY)^N$ 的联合概率分布，即 $P(\mathbf{x}, \mathbf{y}) = \prod\limits_{n=1}^N P(x_n, y_n)$ 中随机抽取的序列对 $\mathbf{x}, \mathbf{y}$ 有如下性质：</p>
+<ol>
+<li>它们是 <strong>JT</strong> 的概率在 $N \to \infty$ 时趋向于1.</li>
+<li>所有 <strong>JT</strong> 的序列对的个数在 $N$ 足够大时，约为 $2^{NH(X,Y)}$.</li>
+<li>如果是分别从 $X^N, Y^N$ 的边缘分布中独立地抽取，则它们满足 <strong>JT</strong> 的概率约为 $2^{-NI(X;Y)}$ ($N \to \infty$).</li>
+</ol>
+</blockquote>
+<p>同上边一样，为了不混淆直觉，此处采用了并不严格的描述。前两条性质类似于 <strong>‘asymptotic equipartition’ principle</strong>，直接利用切比雪夫不等式就能得到，性质3的证明则可以通过先前的结论导出：独立抽取的 $\mathbf{x}$ 几乎必定落入大小为 $2^{NH(X)}$ 的取值集合中，且分布“近似均匀”，$\mathbf{y}$ 同理，于是独立抽取的序列对几乎必定落入大小为 $2^{N(H(X) + H(Y))}$ 的集合中，且分布“近似均匀”；而根据性质2，它们满足 <strong>JT</strong> 的概率约为 $2^{NH(X, Y)}/2^{N(H(X) + H(Y))} = 2^{-NI(X;Y)}$.</p>
+<h4 id="Encoding-decoding-system"><a href="#Encoding-decoding-system" class="headerlink" title="Encoding-decoding system"></a>Encoding-decoding system</h4><p>首先确定单个信道输入的概率分布 $P(X)$，考虑如下一类编解码方案：</p>
+<ol>
+<li>从 $\mathcal{A}_X^N$ 中依概率 $P(\mathbf{x} = \prod\limits_{n=1}^NP(x_n))$ 选取 $S = 2^{NR}$ 个作为码字集合。</li>
+<li>通信双方对所选择的码字达成共识。</li>
+<li>从 1 到 $S$ 中随机选择一个作为消息 $s$, 找到其对应的码字，记作 $\mathbf{x}^{(s)}$，将这个序列依次通过信道，则接收到的序列的分布为 $P(\mathbf{y}|\mathbf{x^{(s)}}) = \prod\limits_{n=1}^N P(y_n|x_n^{(s)})$.</li>
+<li>接收方将接收到的序列 $\mathbf{y}$ 解码为 $\hat{s}$ 当且仅当 $\mathbf{x}^{(s)}$ 是所有码字中唯一能与 $\mathbf{y}$ 组成 <strong>JT</strong> 序列对的一个。否则提示译码错误。</li>
+</ol>
+<p>如果步骤4能够保证译码正确，则平均 $N$ 次使用信道便能传输 $NR$ 比特的信息（各码字被等概率选取，单个消息的信息熵），于是所谓的 <strong>Rate</strong> 为 $R$ bits per channel usage. 我们希望 $R$ 可以尽可能地接近 $C$，为此，我们考察译码错误率与$R$ 之间的关系。</p>
+<p>对于一个特定的编码方案 $\mathcal{C}$, 定义其步骤4发生译码错误的概率为 $p(\mathcal{C}) \equiv P(\hat{s} \neq s|\mathcal{C})$，这个量涉及到具体的编码方案，并不容易处理。因此我们考察这个量在所有上述编码方案下的平均值:</p>
+<p>$$<br>\langle p \rangle \equiv \sum\limits_{\mathcal{C}} P(\hat{s} \neq s | \mathcal{C})P(\mathcal{C})<br>$$</p>
+<p>由于步骤1中各个编码的选择具有轮换对称性，因此在考虑求和后，$s$ 的取值并不影响上式的值。不妨设 $s = 1$.<br>也就是说，我们依概率分布 $P(X^N)$ 选择码字 $P(\mathbf{x}^{(1)})$, 随后将序列 $\mathbf{x}^{(1)}$ 输入信道，依照分布 $P(Y^N|X^N)$ 随机得到一个输出序列 $\mathbf{y}$，显然 $(\mathbf{x}^{(1)}, \mathbf{y})$ 服从分布 $P(X^N, Y^N)$，根据 <strong>JT theorem</strong> 的性质1，它们几乎必然是 <strong>JT</strong> 的。于是若要使得步骤4出错，只剩一种可能：剩下的 $S - 1$ 个码字中还至少有一个与 $\mathbf{y}$ <strong>JT</strong>.</p>
+<p>从上面的分析可以得到，$\mathbf{y}$ 服从边缘分布 $P(Y^N)$ 根据 <strong>JT theorem</strong> 的性质3，剩下的某个码字与 $\mathbf{y}$ <strong>JT</strong> 的概率不超过 $2^{-N(I(X;Y)-\delta)}$，其中 $\delta$ 为一个微小量，用于对应“约”。由于 $1-(1-p)(1-q) \leq p + q$，于是“至少有一个…”的概率:</p>
+<p>$$<br>p’ \leq (2^{NR}-1) \cdot 2^{-N(I(X;Y) - \delta)} \leq 2^{-N(I(X;Y) - R - \delta)}<br>$$</p>
+<p>于是只要 $R &lt; I(X;Y) - \delta$，$p’$ 就可以趋向无穷小，i.e. 平均解码错误率 $\langle p \rangle \to 0$，根据<a href="https://en.wikipedia.org/wiki/Pigeonhole_principle" target="_blank" rel="external">鸽巢原理</a>，必有一种编码 $\mathcal{C}$ 使得 $p(\mathcal{C})$ 足够小，亦即 $R$ bits per channel usage 的 <strong>Rate</strong> 是可达的。取 $P(X) = \underset{P(X)}{argmax}\ I(X;Y)$，则 $R$ 可以趋近 $C$. $\Box$</p>
+<p>其实这样的译码手段类似极大似然推理，直观上看我们需要寻找一种编码方案使得不同的码字对应的信道输出的分布尽可能地分离，当这些输出的分布几乎没有重叠时，我们便能准确地进行概率推理，还原出消息了。而 <strong>JT</strong> 这样的性质给出了很重要的量化方案，帮助完成了定理的证明。</p>
+<p>除此之外，参考书中还通过扔掉一半重叠较多的码字的办法给出了控制“最大译码错误”的办法。</p>
+<h3 id="Part2"><a href="#Part2" class="headerlink" title="Part2"></a>Part2</h3><p>在上面结论的基础上，如果我们允许一定的比特错误率 $p_b$，即译码后的信息 $\hat{s}$ 的某个比特位与真实信息 $s$ 的对应比特位不一致的概率，则 <strong>Rate</strong> 的上限可达 $R(p_b) = \frac{C}{1 - H(p_b)}$.</p>
+<p>显然这里的 R 就不能理解为“平均单次信道使用传递的信息量”了，因为后者永远不会超过信道容量，这里只能理解为“平均单次信道使用所编码的消息的信息量”。由于允许错误存在，这个量显然可以超过之前的极限，因为最简单的办法就是只将信源的一部分比特进行正确的传递，然后接收方随机地猜剩下的比特。</p>
+<p>问题是我们能否做到更好？显然“随机猜”太盲目了，因为被正确传递的部分可以带有关于剩余分布的信息，将这部分信息最大化的手段其实跟冗余的思想类似。当校验码包含更多关于信源的信息时，信源反过来也包含了更多关于校验码的信息。下面给出具体的做法。</p>
+<ol>
+<li>考虑一个概率为 $p_b$ 的 <a href="https://en.wikipedia.org/wiki/Binary_symmetric_channel" target="_blank" rel="external">BSC</a>，这个信道的容量为 $1 - H(p_b)$.</li>
+<li>根据 Part1 的结论，我们可以将 $N(1 - H(p_b))$ 比特的消息编码入 $N$ 比特的信源，从而保证消息在通过这个 BSC 后能被正确还原</li>
+<li>将2中的解码器和编码器反过来，我们用解码器将 $N$ 比特消息压缩成 $N(1 - H(p_b))$ 比特，让压缩后的信源采用 Part1 描述的理想方案通过容量为 $C$ 的信道，然后被正确还原的信息再通过2中的编码器将其扩回 $N$ 比特。则这整个通信过程的输入输出序列均为 $N$ 比特，且恰好就是2中 BSC 两端的序列，它们的比特错误率恰为 $p_b$.</li>
+<li>考虑到3中的压缩率以及信道每次使用能够传递至多 $C$ 比特, 则“平均单次信道使用所编码的消息量”可以达到 $R(p_b)$.</li>
+</ol>
+<p>如果消息 $s$ 在通过信道后被还原为 $\hat{s}$，两者的比特错误率不超过 $p_b$，则当 $s$ 中 0, 1 等概率出现时，$s, \hat{s}$ 对应比特的互信息量为 $1 - H(p_b)$，于是 $R(p_b)$ 就成了 <strong>Rate</strong> 的上限。而当 $s$ 中 0, 1 非等概率时，信道容量不能够被有效利用，Part1 中的理想值无法达到, <strong>Rate</strong> 将会更低。$\Box$</p>
+<h2 id="Conclude"><a href="#Conclude" class="headerlink" title="Conclude"></a>Conclude</h2><p>学通信的都知道大名鼎鼎的香农三大定理，信源编码是其一，有噪信道以及<a href="https://en.wikipedia.org/wiki/Shannon–Hartley_theorem" target="_blank" rel="external">香农极限</a>是其二，还有就是<a href="https://en.wikipedia.org/wiki/Rate–distortion_theory" target="_blank" rel="external">数据率失真理论</a>。这些成果以及背后的信息论体系不仅在通信领域具有重要的理论指导意义，同时也辐射到了如数据压缩，概率推理，机器学习等领域。</p>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><ul>
+<li><a href="https://en.wikipedia.org/wiki/Claude_Shannon" target="_blank" rel="external">Claude Shannon - Wikipedia, the free encyclopedia</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Shannon%27s_source_coding_theorem" target="_blank" rel="external">Shannon’s source coding theorem - Wikipedia, the free encyclopedia</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Noisy-channel_coding_theorem" target="_blank" rel="external">Noisy-channel coding theorem - Wikipedia, the free encyclopedia</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Rate%E2%80%93distortion_theory" target="_blank" rel="external">Rate–distortion theory - Wikipedia, the free encyclopedia</a></li>
+<li><a href="http://www.inference.phy.cam.ac.uk/mackay/itila/book.html" target="_blank" rel="external">David MacKay: Information Theory, Inference, and Learning Algorithms: The Book</a></li>
+</ul>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/fun/">fun</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/tags/Information-theory/">Information theory</a>
+  </div>
+
+        
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+    
+      <a class="addthis_button_pinterest_pinit" pi:pinit:layout="horizontal"></a>
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">Comments</h1>
+
+  
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+  
+</section>
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="q" value="site:farseer.cn">
+  </form>
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/PLT/">PLT</a><small>4</small></li>
+  
+    <li><a href="/categories/PRML/">PRML</a><small>4</small></li>
+  
+    <li><a href="/categories/TCS/">TCS</a><small>2</small></li>
+  
+    <li><a href="/categories/fun/">fun</a><small>4</small></li>
+  
+    <li><a href="/categories/notes/">notes</a><small>1</small></li>
+  
+    <li><a href="/categories/tips/">tips</a><small>2</small></li>
+  
+    <li><a href="/categories/tweak/">tweak</a><small>3</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/Coq/">Coq</a><small>1</small></li>
+  
+    <li><a href="/tags/EVA/">EVA</a><small>1</small></li>
+  
+    <li><a href="/tags/Information-theory/">Information theory</a><small>2</small></li>
+  
+    <li><a href="/tags/art/">art</a><small>1</small></li>
+  
+    <li><a href="/tags/distributed/">distributed</a><small>2</small></li>
+  
+    <li><a href="/tags/game/">game</a><small>1</small></li>
+  
+    <li><a href="/tags/haskell/">haskell</a><small>2</small></li>
+  
+    <li><a href="/tags/javascript/">javascript</a><small>2</small></li>
+  
+    <li><a href="/tags/lambda-calculus/">lambda-calculus</a><small>2</small></li>
+  
+    <li><a href="/tags/logic/">logic</a><small>2</small></li>
+  
+    <li><a href="/tags/math/">math</a><small>4</small></li>
+  
+    <li><a href="/tags/ml/">ml</a><small>4</small></li>
+  
+    <li><a href="/tags/paper/">paper</a><small>2</small></li>
+  
+    <li><a href="/tags/physics/">physics</a><small>1</small></li>
+  
+    <li><a href="/tags/scala/">scala</a><small>1</small></li>
+  
+    <li><a href="/tags/shell/">shell</a><small>1</small></li>
+  
+    <li><a href="/tags/spark/">spark</a><small>1</small></li>
+  
+    <li><a href="/tags/vim/">vim</a><small>2</small></li>
+  
+    <li><a href="/tags/vimperator/">vimperator</a><small>3</small></li>
+  
+    <li><a href="/tags/zsh/">zsh</a><small>1</small></li>
+  
+    <li><a href="/tags/ツッコミ/">ツッコミ</a><small>1</small></li>
+  
+    <li><a href="/tags/中二病/">中二病</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2016 Farseer He
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+<script type="text/javascript">
+var disqus_shortname = 'githubio';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+<!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+</body>
+</html>

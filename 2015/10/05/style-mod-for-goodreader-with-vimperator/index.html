@@ -1,0 +1,273 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Style mod for GoodReader with vimperator | Don&#39;t Panic!</title>
+  <meta name="author" content="Farseer He">
+  
+  <meta name="description" content="The Pain PointLike I’ve mentioned in other posts, most of my reading is done with digital materials. And the application that I use most often for that purpose is named GoodReader(IOS platform). There certainly are better alternatives, nevertheless, I’m too lazy(poor) to alter.
+The old fashioned UI design of the app seems a little bit complicated and confusing, however the front-end page for file transfer via a WLAN is too simple to be satisfying.
+
+no design not all
+multi-file uploading not allowed
+progressing info is too inconspicuous">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Style mod for GoodReader with vimperator"/>
+  <meta property="og:site_name" content="Don&#39;t Panic!"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Don&#39;t Panic!" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	ga('create', 'UA-40313156-5', 'auto');
+	ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Don&#39;t Panic!</a></h1>
+  <h2><a href="/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-10-04T16:00:00.000Z"><a href="/2015/10/05/style-mod-for-goodreader-with-vimperator/">2015-10-05</a></time>
+      
+      
+  
+    <h1 class="title">Style mod for GoodReader with vimperator</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="The-Pain-Point"><a href="#The-Pain-Point" class="headerlink" title="The Pain Point"></a>The Pain Point</h2><p>Like I’ve mentioned in other posts, most of my reading is done with digital materials. And the application that I use most often for that purpose is named GoodReader(IOS platform). There certainly are better alternatives, nevertheless, I’m too lazy(poor) to alter.</p>
+<p>The old fashioned UI design of the app seems a little bit complicated and confusing, however the front-end page for file transfer via a WLAN is too simple to be satisfying.</p>
+<ul>
+<li>no design not all</li>
+<li>multi-file uploading not allowed</li>
+<li>progressing info is too inconspicuous</li>
+</ul>
+<a id="more"></a>
+<p>Well, the actual pain point for me is that the <em>submit</em> button is initially hidden, and is invoked visible with the onChange function of the <em>file</em> button, a glimpse at the source should be clear:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">style</span>=<span class="string">"font-size:9pt"</span> <span class="attr">name</span>=<span class="string">"upload"</span> <span class="attr">action</span>=<span class="string">"_______HTMLFORMFILEUPLOADVIAHTTP_______"</span> <span class="attr">method</span>=<span class="string">"POST"</span> <span class="attr">enctype</span>=<span class="string">"multipart/form-data"</span>&gt;</span></span><br><span class="line">Select file to upload:&amp;nbsp;</span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"file"</span> <span class="attr">name</span>=<span class="string">"filename"</span> <span class="attr">size</span>=<span class="string">"40"</span> <span class="attr">onChange</span>=<span class="string">"this.form.submit.style.visibility='visible'"</span>&gt;</span><span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"submit"</span> <span class="attr">name</span>=<span class="string">"submit"</span> <span class="attr">value</span>=<span class="string">"Upload selected file"</span> <span class="attr">style</span>=<span class="string">"visibility: hidden"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>That seems to be OK, however, it’s a disaster if you use vimperator. Vimperator allows you to complete the operation of selecting files with a really nice built-in path completion interface looks like this:</p>
+<p><img src="/assets/images/article/vimp-file.png" alt="vimp-file"></p>
+<p>All should be done with keyboard started by pressing <strong>f</strong> (which is exactly the <em>focus-element</em> shortcut) at the <em>file</em> button and ended by pressing <strong>f</strong> at the <em>submit</em> button. But the latter is kept hidden after the selection, and <strong>f</strong> won’t make use of hidden objects. i.e. The problem is that the onChange function won’t be called this way.</p>
+<p>Since the perfect way seems not working, one might surrender to a mouse. As paranoid as I am, however, changes shall be made.</p>
+<p>Once we’ve figured out what went wrong, solutions won’t be far ahead. So <code>Don&#39;t panic!</code></p>
+<h2 id="Solutions"><a href="#Solutions" class="headerlink" title="Solutions"></a>Solutions</h2><p>3 dirty ways that I can come up with.</p>
+<h3 id="Changing-the-Source-Code"><a href="#Changing-the-Source-Code" class="headerlink" title="Changing the Source Code"></a>Changing the Source Code</h3><p>The relative part of the vimperator src lies in <code>common/content/buffer.js</code>.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">focusElement: <span class="function"><span class="keyword">function</span> (<span class="params">elem</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (elem <span class="keyword">instanceof</span> HTMLFrameElement || elem <span class="keyword">instanceof</span> HTMLIFrameElement)</span><br><span class="line">        Buffer.focusedWindow = elem.contentWindow;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (elem <span class="keyword">instanceof</span> HTMLInputElement &amp;&amp; elem.type == <span class="string">"file"</span>) &#123;</span><br><span class="line">        Buffer.openUploadPrompt(elem);</span><br><span class="line">        buffer.lastInputField = elem;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;,</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">openUploadPrompt: <span class="function"><span class="keyword">function</span> <span class="title">openUploadPrompt</span>(<span class="params">elem</span>) </span>&#123;</span><br><span class="line">    commandline.input(<span class="string">"Upload file: "</span>, <span class="function"><span class="keyword">function</span> (<span class="params">path</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">let</span> file = io.File(path);</span><br><span class="line">        liberator.assert(file.exists());</span><br><span class="line"></span><br><span class="line">        elem.value = file.path;</span><br><span class="line">    &#125;, &#123;</span><br><span class="line">        completer: completion.file,</span><br><span class="line">        <span class="keyword">default</span>: elem.value</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Adding <code>elem.onchange();</code> to line 19, recompile, replace and restart, not elegant.</p>
+<h3 id="Autocmd"><a href="#Autocmd" class="headerlink" title="Autocmd"></a>Autocmd</h3><p>Add 1 line to .vimperatorrc.</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">autocmd</span> PageLoad <span class="number">192</span>\\.<span class="number">168</span>\\.* js window.content.document.getElementsByTagName(<span class="string">"input"</span>)[<span class="number">0</span>].onchange()</span><br></pre></td></tr></table></figure>
+<p>Works well but may cause error messages when opening other local pages. Of course, we can fix this by a js function with some checking inside, not elegant then.</p>
+<h3 id="Override-the-Attribute"><a href="#Override-the-Attribute" class="headerlink" title="Override the Attribute"></a>Override the Attribute</h3><p>I prefer to change the visibility forcefully, it costs little and is probably bug free. 2 choices still, stylish or vimperator built-in? I chose the latter. So following lines are added to .vimperatorrc or the colorscheme file:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">style -name goodreader-submit-visible http://* &lt;&lt;EOM</span><br><span class="line">    @-moz-document regexp('http://192\\.168\\..*') &#123;</span><br><span class="line">        input[type="submit"] &#123;</span><br><span class="line">            visibility: visible !important;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">EOM</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/tweak/">tweak</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/tags/vimperator/">vimperator</a>, <a href="/tags/ツッコミ/">ツッコミ</a>
+  </div>
+
+        
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+    
+      <a class="addthis_button_pinterest_pinit" pi:pinit:layout="horizontal"></a>
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">Comments</h1>
+
+  
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+  
+</section>
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="q" value="site:farseer.cn">
+  </form>
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/PLT/">PLT</a><small>4</small></li>
+  
+    <li><a href="/categories/PRML/">PRML</a><small>4</small></li>
+  
+    <li><a href="/categories/TCS/">TCS</a><small>2</small></li>
+  
+    <li><a href="/categories/fun/">fun</a><small>4</small></li>
+  
+    <li><a href="/categories/notes/">notes</a><small>1</small></li>
+  
+    <li><a href="/categories/tips/">tips</a><small>2</small></li>
+  
+    <li><a href="/categories/tweak/">tweak</a><small>3</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/Coq/">Coq</a><small>1</small></li>
+  
+    <li><a href="/tags/EVA/">EVA</a><small>1</small></li>
+  
+    <li><a href="/tags/Information-theory/">Information theory</a><small>2</small></li>
+  
+    <li><a href="/tags/art/">art</a><small>1</small></li>
+  
+    <li><a href="/tags/distributed/">distributed</a><small>2</small></li>
+  
+    <li><a href="/tags/game/">game</a><small>1</small></li>
+  
+    <li><a href="/tags/haskell/">haskell</a><small>2</small></li>
+  
+    <li><a href="/tags/javascript/">javascript</a><small>2</small></li>
+  
+    <li><a href="/tags/lambda-calculus/">lambda-calculus</a><small>2</small></li>
+  
+    <li><a href="/tags/logic/">logic</a><small>2</small></li>
+  
+    <li><a href="/tags/math/">math</a><small>4</small></li>
+  
+    <li><a href="/tags/ml/">ml</a><small>4</small></li>
+  
+    <li><a href="/tags/paper/">paper</a><small>2</small></li>
+  
+    <li><a href="/tags/physics/">physics</a><small>1</small></li>
+  
+    <li><a href="/tags/scala/">scala</a><small>1</small></li>
+  
+    <li><a href="/tags/shell/">shell</a><small>1</small></li>
+  
+    <li><a href="/tags/spark/">spark</a><small>1</small></li>
+  
+    <li><a href="/tags/vim/">vim</a><small>2</small></li>
+  
+    <li><a href="/tags/vimperator/">vimperator</a><small>3</small></li>
+  
+    <li><a href="/tags/zsh/">zsh</a><small>1</small></li>
+  
+    <li><a href="/tags/ツッコミ/">ツッコミ</a><small>1</small></li>
+  
+    <li><a href="/tags/中二病/">中二病</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2016 Farseer He
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+<script type="text/javascript">
+var disqus_shortname = 'githubio';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>The hybrid Monte Carlo | Don&#39;t Panic!</title>
+  <meta name="author" content="Farseer He">
+  
+  <meta name="description" content="Preface作为一种先进的采样算法，在 PRML 11.5 中有较为详细的介绍，然而我反复细读了两遍才初窥门径，于是打算将其整理成文。
+Goals of Sampling我决定从 Metropolis 算法开始介绍 Markov Chain Monte Carlo，然后是 Gibbs 采样，最后到混合 Monte Carlo，顺便作为笔记以便日后翻阅。
+不论是哪种算法，其目的都是一致的，即抽取出符合分布 $p(\mathbf{z})$ 的样本，同时，我们希望样本之间是无关的，即满足 i.i.d. 条件。">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="The hybrid Monte Carlo"/>
+  <meta property="og:site_name" content="Don&#39;t Panic!"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Don&#39;t Panic!" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	ga('create', 'UA-40313156-5', 'auto');
+	ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Don&#39;t Panic!</a></h1>
+  <h2><a href="/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-09-21T16:00:00.000Z"><a href="/2015/09/22/the-hybrid-monte-carlo/">2015-09-22</a></time>
+      
+      
+  
+    <h1 class="title">The hybrid Monte Carlo</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h2><p>作为一种先进的采样算法，在 PRML 11.5 中有较为详细的介绍，然而我反复细读了两遍才初窥门径，于是打算将其整理成文。</p>
+<h2 id="Goals-of-Sampling"><a href="#Goals-of-Sampling" class="headerlink" title="Goals of Sampling"></a>Goals of Sampling</h2><p>我决定从 Metropolis 算法开始介绍 Markov Chain Monte Carlo，然后是 Gibbs 采样，最后到混合 Monte Carlo，顺便作为笔记以便日后翻阅。</p>
+<p>不论是哪种算法，其目的都是一致的，即抽取出符合分布 $p(\mathbf{z})$ 的样本，同时，我们希望样本之间是无关的，即满足 <a href="https://en.wikipedia.org/wiki/Independent_and_identically_distributed_random_variables" target="_blank" rel="external">i.i.d.</a> 条件。</p>
+<a id="more"></a>
+<p>采样的目的很大程度上是为了计算期望值，为了近似 $\mathbb{E}[f] = \int f(\mathbf{z}) p(\mathbf{z}) d\mathbf{z} \approx \frac1L \sum\limits_{l=1} ^L f(\mathbf{z} ^{(l)})$.</p>
+<h2 id="Markov-Chain-Monte-Carlo"><a href="#Markov-Chain-Monte-Carlo" class="headerlink" title="Markov Chain Monte Carlo"></a>Markov Chain Monte Carlo</h2><p>Markov Chain Monte Carlo (MCMC) 的基本思想是，通过构造一个状态分布收敛于 $p(\mathbf{z})$ 的 Markov chain 来进行采样，每次根据当前样本和转移函数（条件概率）抽取出下一个样本，序列中较为靠后的样本近似服从目标分布，当序列足够长时，这种采样便能获得很好的效果。</p>
+<p>于是需要解决两个问题：</p>
+<ol>
+<li>如何构造这样的马尔科夫链使得它收敛到唯一的 equilibrium distribution $p(\mathbf{z})$？</li>
+<li>显然，通过 MCMC 直接获取的相邻样本间有很强的相关性，如何处理，使得样本之间近似独立？</li>
+</ol>
+<h3 id="Markov-Chains"><a href="#Markov-Chains" class="headerlink" title="Markov Chains"></a>Markov Chains</h3><p>首先假设我们选取的转移概率函数 $T(\mathbf{z} ^{(m)}, \mathbf{z} ^{(m+1)}) = p(\mathbf{z} ^{(m+1)} | \mathbf{z} ^{(m)})$ 是时不变的，i.e. 只考虑 time-homogeneous Markov chain. 以便于分析与计算。</p>
+<p>为了解决问题1，分两步走：</p>
+<p>1.1 保证这个 MC 有唯一的 stationary distribution <br><br>1.2 使得 $p(\mathbf{z})$ 是其 stationary distribution, i.e. $p(\mathbf{z}) = \sum\limits_{\mathbf{z’}} T(\mathbf{z’}, \mathbf{z}) p(\mathbf{z’})$</p>
+<p>根据随机过程的相关理论，1.1 的一个充分条件如下：</p>
+<ul>
+<li>finite state</li>
+<li>irreducible, 即任意两个状态相互可达</li>
+<li>all states are positive recurrent</li>
+</ul>
+<p>更加明确地，对于有限状态的 MC，只需满足 $v = min_{x}min_{x’: p(x’)&gt;0} T(x, x’)/p(x’) &gt; 0$ 即可（相关证明见文末参考链接）。对于无限状态的 MC，收敛性质变得不容易分析，但是与有限状态类似，1.1 的性质并不难满足，后面的讨论都假设它已经成立。</p>
+<p>对于 1.2，我们希望 T 满足下述充分不必要条件 detailed balance:</p>
+<p>$$<br>p(\mathbf{z}) T(\mathbf{z}, \mathbf{z’}) = p(\mathbf{z’}) T(\mathbf{z’}, \mathbf{z})\tag{1}\label{eq1}<br>$$</p>
+<p>直观上看，说的是任意两个状态之间的收支互补，于是分布不变。严格的证明很容易，此处略去。</p>
+<p>至此，为了满足1，只需要找到合适的 T 满足 $\eqref{eq1}$. （假设1.1容易满足）</p>
+<h3 id="The-Metropolis-Hastings-Algorithm"><a href="#The-Metropolis-Hastings-Algorithm" class="headerlink" title="The Metropolis-Hastings Algorithm"></a>The Metropolis-Hastings Algorithm</h3><p>首先假设 $p(\mathbf{z}) = \tilde{p}(\mathbf{z})/ Z_p$，此处的归一化因子难以计算。我们任意取一个已知的容易抽样的条件概率函数 $q(\mathbf{z’} | \mathbf{z})$，若当前状态为 z，则以对应的条件概率抽取下一个候选状态 z’，然后以概率</p>
+<p>$$<br>A(\mathbf{z’}, \mathbf{z}) = min(1, \frac{\tilde{p}(\mathbf{z’})q(\mathbf{z} | \mathbf{z’})}{\tilde{p}(\mathbf{z})q(\mathbf{z’} | \mathbf{z})})<br>$$</p>
+<p>选择是否接受 z’. 可见对应的转移概率函数 $T(\mathbf{z}, \mathbf{z’}) = q(\mathbf{z’} | \mathbf{z}) A(\mathbf{z’}, \mathbf{z})$ 带入 $\eqref{eq1}$ 可得：</p>
+<p>$$<br>p(\mathbf{z})q(\mathbf{z’} | \mathbf{z}) A(\mathbf{z’}, \mathbf{z}) = min(p(\mathbf{z})q(\mathbf{z’} | \mathbf{z}), p(\mathbf{z’})q(\mathbf{z} | \mathbf{z’})) \\<br>= min(p(\mathbf{z’})q(\mathbf{z} | \mathbf{z’}), p(\mathbf{z})q(\mathbf{z’} | \mathbf{z})) \\<br>= p(\mathbf{z’})q(\mathbf{z} | \mathbf{z’}) A(\mathbf{z}, \mathbf{z’})<br>$$</p>
+<p>此处的证明在我看的 PRML 第一版中将 q 中所有对应的条件和结果给搞反了，不过不影响理解。对于 q 的选取，当状态空间连续时，通常选择高斯分布。</p>
+<p>于是问题1得到了解决，对于问题2，一个简单的做法是在生成的样本中每隔若干选取一个，这样相邻的样本之间的相关度就大大降低了。那么应该间隔多少呢？我在这里略去具体的定量分析，事实上 PRML 对 Random walk 以及独立步长的描述也是含糊不清，但是其定性的描述是非常符合直觉的。</p>
+<p>例如考虑 q 取高斯分布的情况，均值肯定是对应的条件值，若方差很小，则每次转移的平均步长会很小，因此相邻样本之间的关联性很大，为了获取 i.i.d. 需要的间隔就很大；反之若方差很大，转移的平均步长较大，A 取到较小值的概率增加，即采样的失败率下降。因此 q 的方差可以对采样失败率和独立步长进行 trade-off. 而后文介绍的混合蒙特卡洛则能够将这两个值同时降低到一个较为理想的值。</p>
+<h3 id="Gibbs-Sampling"><a href="#Gibbs-Sampling" class="headerlink" title="Gibbs Sampling"></a>Gibbs Sampling</h3><p>Gibbs 采样基于的假设是条件概率容易计算且容易采样，是 Metropolis-Hastings 的一个特例，对于 n 维向量 $\mathbf{z}$, 每 n 次状态转移构成一个新的样本，其中第 k 次转移只改变 $z_k$ 的值，转移概率函数为 $q_k(\mathbf{z’} | \mathbf{z}) = p(z’_k | \mathbf{z_{/k}})$ 即为目标分布下的条件概率。容易算得对应的采样成功率 A 为理想值1.</p>
+<p>在理想的状况下，若 $\mathbf{z}$ 的各个分量相互独立，则每次转移便能够看成是从联合分布中随机抽取一个维度，每 k 次转移完整地从联合分布中抽取一个样本，于是满足 i.i.d. 性质。不然的话，相邻样本间存在相关性，需要舍弃一些中间样本。</p>
+<h2 id="hybrid-Monte-Carlo"><a href="#hybrid-Monte-Carlo" class="headerlink" title="hybrid Monte Carlo"></a>hybrid Monte Carlo</h2><p>根据 <a href="https://en.wikipedia.org/wiki/Maxwell–Boltzmann_distribution" target="_blank" rel="external">Maxwell–Boltzmann</a> 分布，如果我们将 $\mathbf{z}$ 类比为分子的空间位置，若平衡后分子的位置分布服从 $p(\mathbf{z})$，则对应的空间势能函数 $E(\mathbf{z})$ 满足 $p(\mathbf{z}) = \frac{1}{Z_p} exp(-E(\mathbf{z}))$, 此处忽略了系数 kT.</p>
+<p>若引入分子的动量 $\mathbf{r}$，则总能量为势能+动能，即 $H(\mathbf{z}, \mathbf{r}) = E(\mathbf{z}) + K(\mathbf{r})$, 其中 $K(\mathbf{r}) = \frac12 \sum\limits_{i} r_i ^2$. 则平衡后分子的分布满足</p>
+<p>$$<br>p(\mathbf{z}, \mathbf{r}) = \frac{1}{Z_H} exp(-H(\mathbf{z}, \mathbf{r})) \tag{2}\label{eq2}<br>$$</p>
+<p>若我们将分子的运动看作是随机变量 $(\mathbf{z}, \mathbf{r})$ 上的一个 MC，只不过此处我们只在经典力学范围内进行演绎，因此状态转移函数是确定的。类比于 Maxwell-Boltzmann 分布，可以知道这个 MC 收敛于 $\eqref{eq2}$.</p>
+<p>于是我们可以在上述 Markov Chain 上对扩充后的状态空间 $(\mathbf{z}, \mathbf{r})$ 进行采样，随后再将不需要的动量舍去，便能够得到服从 $p(\mathbf{z})$ 的样本。之所以要引入多余的变量 $\mathbf{r}$，是为了求解动力学方程，从而得到一个确定的转移函数。</p>
+<p>此处我的描述与 PRML 中略有出入，原因是我认为第一版中 P550 中对 $\eqref{eq2}$ 在转移下 invariant 的论述并不正确，anyway，我相信这个结论是对的，而且我上面的论述更让自己信服。</p>
+<p>事实上，如果我们能够通过动力学方程准确地计算出分子的轨迹和动量变化（或者是转移方程 T），回到最初提出的两个要求：</p>
+<ol>
+<li>对于要求1，根据上述分析，1.2在 T 下确实得到满足</li>
+<li>只需要每隔足够的时间进行一次采样就能保证独立性</li>
+</ol>
+<p>由于收敛条件1.2已然满足，我们不需要引入额外的 A，即采样的成功率是 100%. 我们只需要沿着时间轴，每隔一段时间根据转移方程和当前状态确定地计算出下一个样本状态即可。然而在实现的时候存在如下问题：</p>
+<ol>
+<li>为了计算 T，我们需要进行数值积分，因而引入误差，从而导致1.2不再成立</li>
+<li>即便是没有误差，由于能量守恒，和特定的起始状态，抽样并不能遍历整个状态空间，换句话说1.1并不成立</li>
+</ol>
+<p>对于1.1，我们可以在某些采样的时候对引入的额外变量 $\mathbf{r}$ 进行 Gibbs 采样来强制进行偏移，由于我们只关心采样后得到的 $\mathbf{z}$，这样的做法在条件概率可采样的情况下是可行的，并且不会降低其采样成功率。虽然这个做法还是存在一定的问题，但是更加细致的分析我本人并不关心。</p>
+<p>于是剩下的就只是误差问题，后面我们将看到即便存在误差，1.2依然可以满足。</p>
+<h3 id="Dynamical-Systems"><a href="#Dynamical-Systems" class="headerlink" title="Dynamical Systems"></a>Dynamical Systems</h3><p>首先我们试图计算 T，建立动力学方程。首先，动量正比于速度，略去质量这个常数后有</p>
+<p>$$<br>\frac{d z_i}{d t} = r_i = \frac{\partial H}{\partial r_i} \tag{3}\label{eq3}<br>$$</p>
+<p>又动量变化量正比于外力（可以看作粒子处于势能为 $E(\mathbf{z})$）的力场，于是略去常数后有</p>
+<p>$$<br>\frac{d r_i}{d t} = - \frac{\partial E(\mathbf{z})}{\partial z_i} = - \frac{\partial H}{\partial z_i}\tag{4}\label{eq4}<br>$$</p>
+<p>我们假设 $E(\mathbf{z})$ 对应于目标分布，是已知的，且其值以及各个 $\frac{\partial E(\mathbf{z})}{\partial z_i}$ 均容易计算，则我们可以通过如下的 leapfrog 公式近似得到 T:</p>
+<p>$$<br>\hat{r}_i(t + \epsilon/2) = \hat{r}_i(t) - \frac{\epsilon}{2} \frac{\partial E}{\partial z_i}(\hat{\mathbf{z}}(t)) \\<br>\hat{z_i}(t + \epsilon) = \hat{z_i}(t) + \epsilon \hat{r}_i(t + \epsilon/2) \\<br>\hat{r}_i(t + \epsilon) = \hat{r}_i(t + \epsilon/2) - \frac{\epsilon}{2} \frac{\partial E}{\partial z_i}(\hat{\mathbf{z}}(t + \epsilon))<br>$$</p>
+<p>其原理很简单，考虑泰勒展开即可，之所以要将更新穿插进行，一方面是为了精确，更重要的是因为这样得到的 $\hat{T}$ 是可逆的，即正向更新 $\epsilon$ 后紧接着反向更新步长 $-\epsilon$ 可以回到原状态。这使得在不能精确还原 T 的情况下通过巧妙的调整依然可以保证收敛性质1.2。可以看出，我们不单可以顺着时间轴进行采样，逆向回溯也是可行的。</p>
+<h3 id="The-Algorithm"><a href="#The-Algorithm" class="headerlink" title="The Algorithm"></a>The Algorithm</h3><p>所谓的“巧妙的调整”指的是，每次采样时（假设当前状态为 $\mathfrak{R}$），抛硬币决定是正向以 $\epsilon$ 或者反向以 $-\epsilon$ 为步长迭代 L 次 leapfrog 得到候选状态 $\mathfrak{R}’$，同时类似 Metropolis-Hastings 算法，以概率 $min(1, exp(-H(\mathfrak{R’}) + H(\mathfrak{R})))$ 接受该候选状态。</p>
+<p>下面通过证明这样修改后的 T 满足 $\eqref{eq1}$ 从而说明收敛性质1.2得到满足。</p>
+<p>首先，由于状态空间连续，对应版本的 detailed balance 需要考察状态空间中的两块可以相互转化的小区域（区域内的 H 值视为常数），容易知道在 leapfrog 操作下前后对应的状态空间区域的体积不变（每一步更新只在一个维度上平移一个常量，更严格的论述参见书本 p553），令这个不变的体积为 $\delta V$，依据上面描述的 T，有：</p>
+<p>$$<br>p(\mathfrak{R}) T(\mathfrak{R}, \mathfrak{R’}) = \frac{1}{Z_H}exp(-H(\mathfrak{R})) \delta V \frac12 min{1, exp(-H(\mathfrak{R’}) + H(\mathfrak{R})))} \\<br>= \frac{1}{Z_H}exp(-H(\mathfrak{R’})) \delta V \frac12 min{1, exp(-H(\mathfrak{R}) + H(\mathfrak{R’})))} \\<br>= p(\mathfrak{R’}) T(\mathfrak{R’}, \mathfrak{R})<br>$$</p>
+<p>其中系数0.5源自抛硬币的概率，第二个等号的成立只需要对 $H(\mathfrak{R}), H(\mathfrak{R’})$ 的相对大小分类讨论即能得出。注意：第一版中将 min 函数内部的正负号均搞反了，容易造成误导。</p>
+<p>至此，可以看出这个算法在理论上与 MCMC 一样是可行的，那么它的优越性其实在于，在 L 够大的情况下，状态得到充分的偏移，样本间的独立性容易满足，而且此时，由于 leapfrog 的近似，状态转移近似依照 T 进行，因而能量近似守恒，即采样成功率很高。粗略的定量分析可以参照书本 p553-554.</p>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><ul>
+<li><a href="https://en.wikipedia.org/wiki/Markov_chain" target="_blank" rel="external">Markov chain</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo" target="_blank" rel="external">Markov chain Monte Carlo</a></li>
+<li><a href="http://research.microsoft.com/en-us/um/people/cmbishop/prml/" target="_blank" rel="external">Christopher M. Bishop | PRML</a></li>
+<li><a href="http://www.cs.toronto.edu/pub/radford/review.pdf" target="_blank" rel="external">Probabilistic Inference Using Markov Chain Monte Carlo Methods</a></li>
+</ul>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/PRML/">PRML</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/tags/ml/">ml</a>, <a href="/tags/physics/">physics</a>
+  </div>
+
+        
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+    
+      <a class="addthis_button_pinterest_pinit" pi:pinit:layout="horizontal"></a>
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">Comments</h1>
+
+  
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+  
+</section>
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="q" value="site:farseer.cn">
+  </form>
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/PLT/">PLT</a><small>4</small></li>
+  
+    <li><a href="/categories/PRML/">PRML</a><small>4</small></li>
+  
+    <li><a href="/categories/TCS/">TCS</a><small>2</small></li>
+  
+    <li><a href="/categories/fun/">fun</a><small>4</small></li>
+  
+    <li><a href="/categories/notes/">notes</a><small>1</small></li>
+  
+    <li><a href="/categories/tips/">tips</a><small>2</small></li>
+  
+    <li><a href="/categories/tweak/">tweak</a><small>3</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/Coq/">Coq</a><small>1</small></li>
+  
+    <li><a href="/tags/EVA/">EVA</a><small>1</small></li>
+  
+    <li><a href="/tags/Information-theory/">Information theory</a><small>2</small></li>
+  
+    <li><a href="/tags/art/">art</a><small>1</small></li>
+  
+    <li><a href="/tags/distributed/">distributed</a><small>2</small></li>
+  
+    <li><a href="/tags/game/">game</a><small>1</small></li>
+  
+    <li><a href="/tags/haskell/">haskell</a><small>2</small></li>
+  
+    <li><a href="/tags/javascript/">javascript</a><small>2</small></li>
+  
+    <li><a href="/tags/lambda-calculus/">lambda-calculus</a><small>2</small></li>
+  
+    <li><a href="/tags/logic/">logic</a><small>2</small></li>
+  
+    <li><a href="/tags/math/">math</a><small>4</small></li>
+  
+    <li><a href="/tags/ml/">ml</a><small>4</small></li>
+  
+    <li><a href="/tags/paper/">paper</a><small>2</small></li>
+  
+    <li><a href="/tags/physics/">physics</a><small>1</small></li>
+  
+    <li><a href="/tags/scala/">scala</a><small>1</small></li>
+  
+    <li><a href="/tags/shell/">shell</a><small>1</small></li>
+  
+    <li><a href="/tags/spark/">spark</a><small>1</small></li>
+  
+    <li><a href="/tags/vim/">vim</a><small>2</small></li>
+  
+    <li><a href="/tags/vimperator/">vimperator</a><small>3</small></li>
+  
+    <li><a href="/tags/zsh/">zsh</a><small>1</small></li>
+  
+    <li><a href="/tags/ツッコミ/">ツッコミ</a><small>1</small></li>
+  
+    <li><a href="/tags/中二病/">中二病</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2016 Farseer He
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+<script type="text/javascript">
+var disqus_shortname = 'githubio';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+<!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+</body>
+</html>

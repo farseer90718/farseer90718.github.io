@@ -1,0 +1,382 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Quosi Newton Methods | Don&#39;t Panic!</title>
+  <meta name="author" content="Farseer He">
+  
+  <meta name="description" content="Preface最近在以蜗牛般的速度啃 PRML。第五章提到了拟牛顿法，这玩意我之前大致意会过，并作了一些笔记，然而我完全无法回忆起来，于是翻出之前的笔记重新意会了一遍，顺便更正了之前一些不太正确的理解，总结整理成下文。
+Newton’s Method考虑求自变量 X 为 N 维向量的函数 $f(X)$ 的极值点问题。我们知道高中数学中的牛顿法可以用于求解函数0点的：$X_{k+1} = X_n - [J_f(X_k)] ^{-1}f(X_k)$. 那么可导函数的极值问题其实就是求其导函数的0点问题，同样可以用牛顿法求解。">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Quosi Newton Methods"/>
+  <meta property="og:site_name" content="Don&#39;t Panic!"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Don&#39;t Panic!" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	ga('create', 'UA-40313156-5', 'auto');
+	ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Don&#39;t Panic!</a></h1>
+  <h2><a href="/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-09-01T16:00:00.000Z"><a href="/2015/09/02/quosi-newton-methods/">2015-09-02</a></time>
+      
+      
+  
+    <h1 class="title">Quosi Newton Methods</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h2><p>最近在以蜗牛般的速度啃 PRML。第五章提到了拟牛顿法，这玩意我之前大致意会过，并作了一些笔记，然而我完全无法回忆起来，于是翻出之前的笔记重新意会了一遍，顺便更正了之前一些不太正确的理解，总结整理成下文。</p>
+<h2 id="Newton’s-Method"><a href="#Newton’s-Method" class="headerlink" title="Newton’s Method"></a>Newton’s Method</h2><p>考虑求自变量 X 为 N 维向量的函数 $f(X)$ 的极值点问题。我们知道高中数学中的牛顿法可以用于求解函数0点的：$X_{k+1} = X_n - [J_f(X_k)] ^{-1}f(X_k)$. 那么可导函数的极值问题其实就是求其导函数的0点问题，同样可以用牛顿法求解。</p>
+<a id="more"></a>
+<p>以同样的迭代方式逼近，设 $X_k$ 为当前对极值点的估计，考虑 f 在其附近的二阶 Taylor 展开：</p>
+<p>$$<br>f(X) \approx f(X_k) + \nabla f(X_k) \cdot (X - X_k) + 0.5 \cdot (X - X_k) ^T \cdot \nabla ^2 f(X_k) \cdot (X - X_k)\tag{1}\label{eq1}<br>$$.</p>
+<p>引入如下的简化标记（梯度向量，Hessian 矩阵）：</p>
+<p>$$<br>\nabla f = g =<br>\begin{pmatrix}<br>\frac{\partial f}{\partial x_1} \\<br>\frac{\partial f}{\partial x_2} \\<br>\vdots \\<br>\frac{\partial f}{\partial x_N} \\<br>\end{pmatrix} \\<br>$$</p>
+<p>$$<br>\nabla ^2 f = H =<br>\begin{pmatrix}<br>\frac{\partial ^2 f}{\partial x_1 ^2} &amp; \frac{\partial ^2 f}{\partial x_1\partial x_2} &amp; \cdots &amp; \frac{\partial ^2 f}{\partial x_1\partial x_N}\\<br>\frac{\partial ^2 f}{\partial x_2\partial x_1} &amp; \frac{\partial ^2 f}{\partial x_2 ^2} &amp; \cdots &amp; \frac{\partial ^2 f}{\partial x_2\partial x_N}\\<br>\vdots &amp; \vdots &amp; \ddots &amp; \vdots\\<br>\frac{\partial ^2 f}{\partial x_N\partial x_1} &amp; \frac{\partial ^2 f}{\partial x_N\partial x_2} &amp; \cdots &amp; \frac{\partial ^2 f}{\partial x_N ^2}\\<br>\end{pmatrix}<br>$$</p>
+<p>$\eqref{eq1}$ 的约等号两边分别对 X 求梯度，得到 $\nabla f(X) = g_k + H_k \cdot (X - X_k)$, 我们希望它的值为0，解出对应的 X，作为极值点的下一个估计 $X_{k+1} = X_k - H_k ^{-1} \cdot g_k$.</p>
+<h3 id="Wolfe-Conditions"><a href="#Wolfe-Conditions" class="headerlink" title="Wolfe Conditions"></a>Wolfe Conditions</h3><p>在拟牛顿法中，实际的更新并不是严格按照上边的等式进行。为了保证每一步迭代之后，估计点更加逼近极值点（此处以极小值为例），我们采取一种 line search 的方法：$X_{k+1} = X_k - \lambda H_k ^{-1} \cdot g_k$，不改变其更新的方向，但是调整更新步长。这里的参数 α 需要满足所谓的 Wolfe 条件：</p>
+<ol>
+<li>$f(\mathbf{X}_k+\lambda\mathbf{p}_k)\leq f(\mathbf{X}_k)+c_1\lambda\mathbf{p}_k ^{\mathrm T}\nabla f(\mathbf{X}_k)$</li>
+<li>$\mathbf{p}_k ^{\mathrm T}\nabla f(\mathbf{X}_k+\lambda\mathbf{p}_k) \geq c_2\mathbf{p}_k ^{\mathrm T}\nabla f(\mathbf{X}_k)$</li>
+</ol>
+<p>其中 $\mathbf{p}_k = - H_k ^{-1} \cdot g_k$ 称作牛顿方向，$0 &lt; c1 &lt; c2 &lt; 1$, 简单用自然语言解释下上面两个条件：</p>
+<ol>
+<li>迭代之后的函数值确实减小了（此处考虑极小值问题，所以牛顿方向需要满足 $p_k ^T g_k &lt; 0$），且至少以线性速率递减，c1 通常取一个很小的数，如 0.0001</li>
+<li>每次迭代之后，梯度以近似指数的速率缩小（考虑到两边均小于0），因而能向0趋近，c2 为衰减速率，因而取一个近似1的较大值即可，如 0.9</li>
+</ol>
+<p>这样的性质固然很好，但是如何寻找满足如此复杂条件的步长呢？似乎并没有什么高效的办法。所以实际应用中，这个问题往往被近似为 $argmin_{\lambda} f(X_k + \lambda \mathbf{p}_k)$，这将容易数值求解。</p>
+<p>此外 Wolfe 条件被证明能够保留 Hessian 矩阵的估计值（将在后文出现）的正定性。</p>
+<h3 id="Secant-Equation-amp-Quosi-Newton-Condition"><a href="#Secant-Equation-amp-Quosi-Newton-Condition" class="headerlink" title="Secant Equation &amp; Quosi-Newton Condition"></a>Secant Equation &amp; Quosi-Newton Condition</h3><p>考虑梯度函数在 $X_k$ 处的一阶泰勒展开，有 $\nabla f(X_k+\Delta X) \approx \nabla f(X_k)+H(X_k) \Delta X$，这被称作 Secant 等式，对应与牛顿法类似的 <a href="https://en.wikipedia.org/wiki/Secant_method" target="_blank" rel="external">Secant Method</a>. 当步长足够小时，上式的直接推论： $g_{k+1} - g_k = H_{k+1} \cdot (X_{k+1} - X_k)$， 这被称为拟牛顿条件（Quosi-Newton condition）后面的拟牛顿法将利用这个等式来迭代地计算 H，从而降低复杂度。</p>
+<h2 id="Broyden–Fletcher–Goldfarb–Shanno-algorithm"><a href="#Broyden–Fletcher–Goldfarb–Shanno-algorithm" class="headerlink" title="Broyden–Fletcher–Goldfarb–Shanno algorithm"></a>Broyden–Fletcher–Goldfarb–Shanno algorithm</h2><p>首先总结下牛顿法的求解思路：</p>
+<ol>
+<li>给定初值 $X_0$ 和精度阈值e，k=0</li>
+<li>计算 $g_k, H_k$</li>
+<li>若 $||g_k|| &lt; e$ 停止，否则计算牛顿方向 $\mathbf{p}_k = - H_k ^{-1} \cdot g_k$</li>
+<li>利用牛顿方向计算最优步长因子，$argmin_{\lambda} f(X_k + \lambda \mathbf{p}_k)$</li>
+<li>k++, goto step 2</li>
+</ol>
+<p>牛顿法的问题就是第二步的数值计算十分低效，PRML 的第五章花了不少篇幅讲解了在神经网络这样特殊的场景下如何利用 back propagation 高效的计算 Jacobian 和 Hessian 矩阵。</p>
+<p>一般场景下的做法是通过 Secant 等式来近似地迭代更新 Hessian 矩阵（或者其逆矩阵），于是步骤2的计算代价被大大降低，这样的方法称为 Quosi-Newton Method.</p>
+<p>由于篇幅的原因（其实是我懒得抄数学公式），我直接跳过比较古老的 <a href="https://en.wikipedia.org/wiki/Davidon–Fletcher–Powell_formula" target="_blank" rel="external">DFP 算法</a>，直接介绍如今比较流行的 BFGS 和 L-BFGS.</p>
+<p>引入如下记号：</p>
+<ol>
+<li>$s_k = X_{k+1} - X_k$</li>
+<li>$y_k = g_{k+1} - g_k$</li>
+<li>$B_k \approx H_k$</li>
+</ol>
+<p>假设每次迭代更新时，H 的增量满足如下形式 $\Delta B_k = \alpha uu ^T + \beta vv ^T$. 至于为何假设为这样的形式，我估计是出于以下考虑：</p>
+<ul>
+<li>如果高阶导数均连续，则 H 矩阵为对称矩阵，参见 <a href="https://en.wikipedia.org/wiki/Symmetry_of_second_derivatives#Clairaut.27s_theorem" target="_blank" rel="external">Clairaut’s theorem</a></li>
+<li>保留正定性</li>
+<li>碰巧有满足拟牛顿条件的特殊解： $\Delta B_k = \frac{y_k y_k ^T}{y_k ^T s_k} - \frac{B_k s_k s_k ^T B_k}{s_k ^T B_k s_k}$</li>
+</ul>
+<p>但是计算 H 的目标事实上是为了计算牛顿方向，这需要涉及到矩阵求逆运算，幸运的是，上面的迭代公式可以通过 <a href="https://en.wikipedia.org/wiki/Woodbury\_matrix\_identity" target="_blank" rel="external">Woodbury formula</a> 的特殊形式 <a href="https://en.wikipedia.org/wiki/Sherman–Morrison\_formula" target="_blank" rel="external">Sherman–Morrison formula</a> 巧妙地转化为其逆矩阵的迭代公式：</p>
+<p>$$B_{k+1} ^{-1} = \left (I-\frac { s_k y_k ^T} {y_k ^T s_k} \right ) B_{k} ^{-1} \left (I-\frac { y_k s_k ^T} {y_k ^T s_k} \right )+\frac {s_k s_k ^T} {y_k ^T \, s_k} \\<br>= B_k ^{-1} + \frac{(\mathbf{s}_k ^{\mathrm{T}}\mathbf{y}_k+\mathbf{y}_k ^{\mathrm{T}} B_k ^{-1} \mathbf{y}_k)(\mathbf{s}_k \mathbf{s}_k ^{\mathrm{T}})}{(\mathbf{s}_k ^{\mathrm{T}} \mathbf{y}_k) ^2} - \frac{B_k ^{-1} \mathbf{y}_k \mathbf{s}_k ^{\mathrm{T}} + \mathbf{s}_k \mathbf{y}_k ^{\mathrm{T}}B_k ^{-1}}{\mathbf{s}_k ^{\mathrm{T}} \mathbf{y}_k}<br>$$</p>
+<p>这样的计算是非常高效的，并且没有需要存储的中间结果矩阵。</p>
+<p>将上述牛顿法算法中的第2-3步中计算牛顿方向的方式换成 $\mathbf{p}_k = - B_{k} ^{-1} \cdot g_k$, 同时加入对 B 的迭代，即得到完整的 BFGS 算法。注意，此处的梯度依然是通过普通方法计算（解析解或者数值解）。</p>
+<h3 id="L-BFGS"><a href="#L-BFGS" class="headerlink" title="L-BFGS"></a>L-BFGS</h3><p>考虑到当自变量的维度 N 过大时，存储 $B_k ^{-1}$ 需要过多的存储资源，于是便有了 L-BFGS 这样的改版算法，在该算法中，并不存储完整的 Hessian 矩阵的逆矩阵的近似值，而是通过存储 2m 个 N 维向量（最近m 个 s 和 y）来近似还原它。如果令：</p>
+<ol>
+<li>$\rho_k = \frac{1}{y_k ^Ts_k}$</li>
+<li>$V_k = I - \rho_ky_ks_k ^T$</li>
+<li>$D_k = B_k ^{-1}$</li>
+</ol>
+<p>反复利用 BFGS 的递推公式可以得到：</p>
+<span>$$D\_{k+1} = (V\_k ^TV\_{k-1} ^T \cdots V\_{k-m+1} ^T)D\_{k-m+1}(V\_{k-m+1} \cdots V\_{k-1}V\_k) \\\\
+    + (V\_k ^TV\_{k-1} ^T \cdots V\_{k-m+2} ^T)(\rho\_{k-m+1}s\_{k-m+1}s\_{k-m+1} ^T)(V\_{k-m+2} \cdots V\_{k-1}V\_k) \\\\
+    + (V\_k ^TV\_{k-1} ^T \cdots V\_{k-m+3} ^T)(\rho\_{k-m+2}s\_{k-m+2}s\_{k-m+2} ^T)(V\_{k-m+3} \cdots V\_{k-1}V\_k) \\\\
+    + ... \\\\
+    + (V\_k ^TV\_{k-1} ^T)(\rho\_{k-2}s\_{k-2}s\_{k-2} ^T)(V\_{k-1}V\_k) \\\\
+    + V\_k ^T(\rho\_{k-1}s\_{k-1}s\_{k-1} ^T)V\_k \\\\
+    + \rho\_ks\_ks\_k ^T$$</span><!-- Has MathJax -->
+<p>于是只需要对 $D_{k-m+1}$ 作出估计即可近似地计算出牛顿方向，通常取 $D_{k-m+1} = \frac{s_k ^T y_k}{y_k ^T y_k} I$.</p>
+<h2 id="Conjugate-Gradient-Method"><a href="#Conjugate-Gradient-Method" class="headerlink" title="Conjugate Gradient Method"></a>Conjugate Gradient Method</h2><p>既然提到了拟牛顿法，就顺便提一下另一种高效的非线性优化算法——共轭梯度法。</p>
+<h3 id="Steepest-Gradient-Descent"><a href="#Steepest-Gradient-Descent" class="headerlink" title="Steepest Gradient Descent"></a>Steepest Gradient Descent</h3><p>最 Naive 的非线性优化思路是：</p>
+<ol>
+<li>寻找函数在点 X 的梯度 $\nabla f(X)$</li>
+<li>沿梯度反方向作 line search，寻找更新步长 $argmin_{\lambda} f(X - \lambda \nabla f(X))$</li>
+<li>根据2的结果更新 X，重复1-2直至收敛</li>
+</ol>
+<p>这个算法的低效源于：在极值点附近，梯度方向往往并不指向极值（存在某种形变），对应与下图中的绿色折线。</p>
+<p><img src="/assets/images/article/Conjugate_gradient.png" alt="sgd"></p>
+<p>所以共轭梯度法的基本思路就是将这样的形变考虑在内，通过变化更新方向来抵消影响, 如上图中的红线。</p>
+<h3 id="Approximate-Linear-Equation"><a href="#Approximate-Linear-Equation" class="headerlink" title="Approximate Linear Equation"></a>Approximate Linear Equation</h3><p>由于任意的二阶可导函数在极值点附近近似为一个二次型（通过泰勒展开容易得到），而这样的二次型近似可以大致捕获上边描述的形变，因此我们首先来考虑二次型的极小值问题：</p>
+<p>$$<br>f(X) = \frac12 X ^\mathrm{T} \mathbf{A}X - X ^\mathrm{T} \mathbf{b} , \quad X\in\mathbf{R} ^n.<br>$$</p>
+<p>令其梯度为0，我们得到极值点方程：</p>
+<p>$$<br>\mathbf{AX_*} = \mathbf{b}\tag{2}\label{eq2}<br>$$.</p>
+<h3 id="A-conjugate-Vectors"><a href="#A-conjugate-Vectors" class="headerlink" title="A-conjugate Vectors"></a>A-conjugate Vectors</h3><p>将向量的内积进行扩展，定义 A-dot: $\mathbf{u}^\mathrm{T} \mathbf{A} \mathbf{v}$. 向量 u, v 被称为 A-conjugate iff 其 A-dot 为零，或称 A-orthogonal, 显然这个二元关系满足交换律。下面考虑这个定义在上述优化问题中的意义。</p>
+<p>设 $X_*$ 为待求的上述目标函数的极小值点，则 $f(X) = \frac12 (X - X_*) ^{\mathrm{T}} \mathbf{A} (X - X_*)$</p>
+<p>考虑极值点附近的等势图（如上图），对于 $X_1$，它是从 $X_0$ 出发作 line search 之后得到的最小值点，则向量 $\mathbf{u} = X_1 - X_0$ 必与某个等势线相切，$X_1$ 为切点。由于该处的梯度向量为 $\nabla{f(X_1)} = \mathbf{A} (X_1 - X_*) = \mathbf{A v}$，得到相切关系方程：$\mathbf{u}^\mathrm{T} \mathbf{A} \mathbf{v} = 0$. 换句话说，沿某个方向（如梯度反方向）找到极小值点之后，下一步更新的方向应该选其共轭方向。对于二维，二次型函数，这样的两步更新必能找到极值点；同理对于 N 维的情形，只需 N 步，更新方向两两共轭，这一点稍后会简要分析。</p>
+<p>所以，从上面的分析可以看出，共轭方向的实质是引导更新方向重新指向极值点，从而减少更新步骤，提高效率。那么接下来的问题是：</p>
+<ol>
+<li>如何选择共轭方向？</li>
+<li>如何计算每一步的更新步长？</li>
+</ol>
+<h3 id="Iterative-Method"><a href="#Iterative-Method" class="headerlink" title="Iterative Method"></a>Iterative Method</h3><p>首先，不失一致性（座标平移），设 $X_0 = 0$. 下面回答上边提出的两个问题：</p>
+<ol>
+<li>方向选择<ol>
+<li>初始时，我们选取的更新方向为 $\mathbf{p}_0 = -\nabla{f(X_0)} = \mathbf{b} - \mathbf{A} X_0$，</li>
+<li>之后将依次选择接近于 $\mathbf{r}_k = \nabla{f(X_k)}$, 且与之前的更新方向均共轭的方向 $\mathbf{p}_k$</li>
+<li>更新的方法类似于正交基的选取，$\mathbf{p}_{k} = \mathbf{r}_{k} - \sum_{i &lt; k}\frac{\mathbf{p}_i ^\mathrm{T} \mathbf{A} \mathbf{r}_{k}}{\mathbf{p}_i ^\mathrm{T}\mathbf{A} \mathbf{p}_i} \mathbf{p}_i$, 即需要从负梯度方向中减去它在之前各个更新方向中的 A-projection. 参见 <a href="https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process" target="_blank" rel="external">Gram–Schmidt process</a>.</li>
+</ol>
+</li>
+<li>更新步长<ol>
+<li>由于初始点选为 0 点，所以有 $X_k = \sum\limits_{i &lt; k} \lambda_k \mathbf{p}_k$, 于是 $\mathbf{p}_k ^{\mathrm{T}} \mathbf{A} X_k = 0$. 即每一步的更新方向与此刻 X 所在的方向共轭。</li>
+<li>计算 $argmin_{\lambda_k} - \frac12 (X_k + \lambda_k \mathbf{p}_k) ^{\mathrm{T}} A (X_k + \lambda_k \mathbf{p}_k) + \mathbf{b}(X_k + \lambda_k \mathbf{p}_k)$</li>
+<li>令上式对 $\lambda_k$ 的偏导为0，并结合1中得出的共轭结论，容易得到更新步长的解析解：</li>
+</ol>
+</li>
+</ol>
+<p>$$<br>\lambda_{k} = \frac{\mathbf{p}_k ^\mathrm{T} \mathbf{b}}{\mathbf{p}_k ^\mathrm{T} \mathbf{A} \mathbf{p}_k} = \frac{\mathbf{p}_k ^\mathrm{T} (\mathbf{r}_{k-1}+\mathbf{Ax}_{k-1})}{\mathbf{p}_{k} ^\mathrm{T} \mathbf{A} \mathbf{p}_{k}} = \frac{\mathbf{p}_{k} ^\mathrm{T} \mathbf{r}_{k-1}}{\mathbf{p}_{k} ^\mathrm{T} \mathbf{A} \mathbf{p}_{k}}<br>$$</p>
+<p>根据上式可以看出，每一步的更新量为向量 <strong>b</strong> 在 $\mathbf{p}_k$ 方向上的 A-projection. 恰好初始点为0，又极值点满足 $\eqref{eq2}$, 因此各个更新量正好构成了 $X_*$ 在 ${\mathbf{p}_k}$ 这组共轭正交基上的分解，因此只需至多 N 步更新即可找到极值点，具体的形式化推导参见维基百科。</p>
+<h3 id="Tuning"><a href="#Tuning" class="headerlink" title="Tuning"></a>Tuning</h3><p>上面的算法存在的问题在于，计算新方向时，需要记录各个共轭方向的历史信息，当 N 很大时，消耗过多的存储资源，因此共轭梯度法在实际应用时采用某种近似的手段来进行优化，使得只需要记录最近一次的3个向量$X_k, \mathbf{p}_k, \mathbf{r}_k$，如 Fletcher–Reeves 算法，其推导及相关公式参见维基百科。对于一般的非线性优化问题，通用的算法框架如下：</p>
+<ol>
+<li>计算负梯度方向</li>
+<li>根据 Fletcher-Reever 公式（或其它变种）计算方向变化量</li>
+<li>根据1,2的结果以及“上一个共轭方向”计算新的共轭方向</li>
+<li>在新的方向上作 line search 找到合适步长</li>
+<li>更新 X</li>
+<li>重复 1-5 直至收敛</li>
+</ol>
+<p>与拟牛顿法相较而言，共轭梯度法的收敛速度要慢一些，但依然比普通的梯度下降法要迅速得多，因而不失为一个好的选择。而且由于它所需的存储资源远小于拟牛顿法（即便是 L-BFGS 也需要 O(2mN)), 格外适用于维度极大的优化问题。</p>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><ul>
+<li><a href="https://en.wikipedia.org/wiki/Quasi-Newton_method" target="_blank" rel="external">Quasi-Newton method</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Broyden–Fletcher–Goldfarb–Shanno_algorithm" target="_blank" rel="external">Broyden–Fletcher–Goldfarb–Shanno algorithm</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Conjugate_gradient_method" target="_blank" rel="external">Conjugate gradient method</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Nonlinear_conjugate_gradient_method" target="_blank" rel="external">Nonlinear conjugate gradient method</a></li>
+</ul>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/PRML/">PRML</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/tags/math/">math</a>, <a href="/tags/ml/">ml</a>
+  </div>
+
+        
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+    
+      <a class="addthis_button_pinterest_pinit" pi:pinit:layout="horizontal"></a>
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">Comments</h1>
+
+  
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+  
+</section>
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="q" value="site:farseer.cn">
+  </form>
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/PLT/">PLT</a><small>4</small></li>
+  
+    <li><a href="/categories/PRML/">PRML</a><small>4</small></li>
+  
+    <li><a href="/categories/TCS/">TCS</a><small>2</small></li>
+  
+    <li><a href="/categories/fun/">fun</a><small>4</small></li>
+  
+    <li><a href="/categories/notes/">notes</a><small>1</small></li>
+  
+    <li><a href="/categories/tips/">tips</a><small>2</small></li>
+  
+    <li><a href="/categories/tweak/">tweak</a><small>3</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/Coq/">Coq</a><small>1</small></li>
+  
+    <li><a href="/tags/EVA/">EVA</a><small>1</small></li>
+  
+    <li><a href="/tags/Information-theory/">Information theory</a><small>2</small></li>
+  
+    <li><a href="/tags/art/">art</a><small>1</small></li>
+  
+    <li><a href="/tags/distributed/">distributed</a><small>2</small></li>
+  
+    <li><a href="/tags/game/">game</a><small>1</small></li>
+  
+    <li><a href="/tags/haskell/">haskell</a><small>2</small></li>
+  
+    <li><a href="/tags/javascript/">javascript</a><small>2</small></li>
+  
+    <li><a href="/tags/lambda-calculus/">lambda-calculus</a><small>2</small></li>
+  
+    <li><a href="/tags/logic/">logic</a><small>2</small></li>
+  
+    <li><a href="/tags/math/">math</a><small>4</small></li>
+  
+    <li><a href="/tags/ml/">ml</a><small>4</small></li>
+  
+    <li><a href="/tags/paper/">paper</a><small>2</small></li>
+  
+    <li><a href="/tags/physics/">physics</a><small>1</small></li>
+  
+    <li><a href="/tags/scala/">scala</a><small>1</small></li>
+  
+    <li><a href="/tags/shell/">shell</a><small>1</small></li>
+  
+    <li><a href="/tags/spark/">spark</a><small>1</small></li>
+  
+    <li><a href="/tags/vim/">vim</a><small>2</small></li>
+  
+    <li><a href="/tags/vimperator/">vimperator</a><small>3</small></li>
+  
+    <li><a href="/tags/zsh/">zsh</a><small>1</small></li>
+  
+    <li><a href="/tags/ツッコミ/">ツッコミ</a><small>1</small></li>
+  
+    <li><a href="/tags/中二病/">中二病</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2016 Farseer He
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+<script type="text/javascript">
+var disqus_shortname = 'githubio';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+<!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+</body>
+</html>
