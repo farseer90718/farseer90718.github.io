@@ -1,0 +1,313 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Commutators | Don&#39;t Panic!</title>
+  <meta name="author" content="Farseer He">
+  
+  <meta name="description" content="In quantum mechanics we assume the following: 
+
+Each observable is associated with an Hermitian operator of a Hilbert space H. Its eigenvalues must be real and the eigenstates are orthogonal to each other, thus form a set of basis of H.
+Upon observation, one of the eigenvalues will be the quantity and the wave function will collapse onto one of the corresponding eigenstates.
+
+Here I don’t want to discuss the deep insights, which I have no idea of. That’s why I take Copenhagen interpretation, so shut up and compute!
+This article is written as a note of my understanding of physical and mathematical meaning of commutators, mainly the answer to the question: “why do commute operators have a common set of eigenstates ?”">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Commutators"/>
+  <meta property="og:site_name" content="Don&#39;t Panic!"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Don&#39;t Panic!" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	ga('create', 'UA-40313156-5', 'auto');
+	ga('send', 'pageview');
+
+</script>
+
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Don&#39;t Panic!</a></h1>
+  <h2><a href="/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2017-09-16T09:25:12.000Z"><a href="/2017/09/16/Commutators/">2017-09-16</a></time>
+      
+      
+  
+    <h1 class="title">Commutators</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>In quantum mechanics we assume the following: </p>
+<ol>
+<li>Each observable is associated with an <a href="https://en.wikipedia.org/wiki/Hermitian_operator" target="_blank" rel="external">Hermitian operator</a> of a Hilbert space H. Its eigenvalues must be real and the eigenstates are orthogonal to each other, thus form a set of basis of H.</li>
+<li>Upon observation, one of the eigenvalues will be the quantity and the wave function will collapse onto one of the corresponding eigenstates.</li>
+</ol>
+<p>Here I don’t want to discuss the deep insights, which I have no idea of. That’s why I take <a href="https://en.wikipedia.org/wiki/Copenhagen_interpretation" target="_blank" rel="external">Copenhagen interpretation</a>, so shut up and compute!</p>
+<p>This article is written as a note of my understanding of physical and mathematical meaning of commutators, mainly the answer to the question: “why do commute operators have a common set of eigenstates ?”</p>
+<a id="more"></a>
+<h2 id="Definition"><a href="#Definition" class="headerlink" title="Definition"></a>Definition</h2><ul>
+<li>Suppose $\hat{A}, \hat{B}$ are operators of $H \to H$</li>
+<li>Then the commutator of them are defined as $[\hat{A}, \hat{B}] \equiv \hat{A}\hat{B} - \hat{B}\hat{A}$ is also an operator of $H \to H$</li>
+<li>We are particularly interested in observables, so without further specification, we assume the operators mentioned below are Hermitian.</li>
+</ul>
+<h2 id="Uncertainty-Principle"><a href="#Uncertainty-Principle" class="headerlink" title="Uncertainty Principle"></a>Uncertainty Principle</h2><p>The most famous pair of operators might be position op $\hat{x}$ and momentum op $\hat{p} = -i\hbar\partial_x$ (1-d case), we can easily compute their commutator $[\hat{x} , \hat{p}] = i\hbar$. It’s a constant operator. The physical interpretation of this is “position and momentum of the same direction can’t be observed simultaneously”:</p>
+<ol>
+<li>Position x is observed iff the wave function collapses onto an eigenstate of $\hat{x}$</li>
+<li>Suppose both quantities are measured, then there must be a shared eigenstate $\Phi_{x,p}(x)$ for the collapsed wave function to reside in. We denote its eigenvalues as $x_0, p_0$.</li>
+<li>Contradiction occurs<br>$$<br>i \hbar \Phi_{x,p} = [\hat{x}, \hat{p}] \Phi_{x,p} = x_0 p_0 \Phi_{x,p} - x_0 p_0 \Phi_{x,p} = 0<br>$$</li>
+<li>No such none zero wave function to hold the equation, hypotheses objected.</li>
+</ol>
+<p>Mathematically, we can apply the Cauchy-Schwarz inequality to <a href="https://en.wikipedia.org/wiki/Uncertainty_principle#Robertson.E2.80.93Schr.C3.B6dinger_uncertainty_relations" target="_blank" rel="external">prove</a> the Robertson uncertainty relation:</p>
+<p>$$<br>{\displaystyle \sigma_{A}\sigma_{B}\geq \left|{\frac {1}{2i}}\langle [{\hat {A}},{\hat {B}}]\rangle \right|={\frac {1}{2}}\left|\langle [{\hat {A}},{\hat {B}}]\rangle \right|}<br>$$</p>
+<p>When it comes to the case of position and momentum, we get the very “uncertainty principle” written on high-school physics textbook.</p>
+<h2 id="Commute-Operators"><a href="#Commute-Operators" class="headerlink" title="Commute Operators"></a>Commute Operators</h2><p>The real problem is, what happens when two operators always commute ? i.e. $[\hat{A}, \hat{B}] = 0$. By definition we can easily derive:</p>
+<p>Prop 1. $\forall \Phi_a(x) s.t. \hat{A}\Phi_a(x) = a \Phi_a(x), \hat{A}(\hat{B}\Phi_a(x)) = a \hat{B}\Phi_a(x)$, $\hat{B}$ act on any eigenstate of $\hat{A}$ yields another (might be the same) eigenstate of A, with the same eigenvalue.<br>Prop 2. Vice versa.<br>Prop 3. If a is an none-degenerate eigenvalue of $\hat{A}$, i.e. only one normalized eigenstate $\Phi_a(x)$. According to Prop 1, $\hat{B} \Phi_a(x)$ must be proportional to $\Phi_a(x)$, i.e. $\Phi_a(x)$ is also an eigenstate of $\hat{B}$.</p>
+<p>We have shown that any none-degenerate eigenstate of $\hat{A}$ is a shared eigenstate. In order to prove the assertion “commute operators have a common set of eigenstates”, by symmetry, we only need to show that “for any degenerate eigenvalue a of $\hat{A}$, there are shared eigenstates, the span of which covers all the eigenstates of a”.</p>
+<ol>
+<li>Both operations are Hermitian, thus linear. All eigenstates of a forms a linear subspace (here for simplicity, consider only finite-dimensional case) $H_a$ of $H$.</li>
+<li>For any eigenstate $\Phi_b(x)$ of $\hat{B}$, project it onto both $H_a$ and its orthogonal complement $H_c$: $\Phi_b(x) = \beta_a + \beta_c$.</li>
+<li>$b\beta_a + b\beta_c = b\Phi_b(x) = \hat{B}\Phi_b(x) = \hat{B}\beta_a + \hat{B}\beta_c$, since Prop 1, $\hat{B}\beta_a$ lies in $H_a$ and $\hat{B}\beta_c$ in $H_c$ which is perpendicular to $H_a$.</li>
+<li>Hence $b\beta_a = \hat{B}\beta_a, b\beta_c = \hat{B}\beta_c$, both components are eigenstates of $\hat{B}$ with eigenvalue of b. $\beta_a$ is also a shared eigenstate since it lies in $H_a$.</li>
+<li>Consider a certain set of basis $S_B$ of $H$ constituted by eigenstates of $\hat{B}$, their $\beta_a$ components are orthogonal, and none-zero parts of them should form a complete set of basis of $H_a$. Otherwise their span won’t cover the whole space.</li>
+<li>Choose the none-zero $\beta_a$ parts, and for the rest, change the eigenstates to their $\beta_c$ components. A new set of basis with shared eigenstates across $H_a$ is formed.</li>
+</ol>
+<p>So far, we have not only proved the assertion but also come up with a way to actually construct the common basis. Happy ending!</p>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><ul>
+<li><a href="https://www.eng.famu.fsu.edu/~dommelen/quantum/style_a/nt_diag.html" target="_blank" rel="external">https://www.eng.famu.fsu.edu/~dommelen/quantum/style_a/nt_diag.html</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Wave_function" target="_blank" rel="external">Wave function</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Wave_function#Wave_functions_and_function_spaces" target="_blank" rel="external">Wave function space</a></li>
+</ul>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+  
+  <div class="tags">
+    <a href="/tags/physics/">physics</a>
+  </div>
+
+        
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+    
+      <a class="addthis_button_pinterest_pinit" pi:pinit:layout="horizontal"></a>
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+<section id="comment">
+  <h1 class="title">Comments</h1>
+
+  
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+  
+</section>
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="q" value="site:farseer.cn">
+  </form>
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/ML/">ML</a><small>6</small></li>
+  
+    <li><a href="/categories/PLT/">PLT</a><small>4</small></li>
+  
+    <li><a href="/categories/TCS/">TCS</a><small>2</small></li>
+  
+    <li><a href="/categories/fun/">fun</a><small>2</small></li>
+  
+    <li><a href="/categories/notes/">notes</a><small>1</small></li>
+  
+    <li><a href="/categories/tips/">tips</a><small>2</small></li>
+  
+    <li><a href="/categories/tweak/">tweak</a><small>3</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/Coq/">Coq</a><small>1</small></li>
+  
+    <li><a href="/tags/EVA/">EVA</a><small>1</small></li>
+  
+    <li><a href="/tags/Information-theory/">Information theory</a><small>2</small></li>
+  
+    <li><a href="/tags/Physics/">Physics</a><small>0</small></li>
+  
+    <li><a href="/tags/art/">art</a><small>1</small></li>
+  
+    <li><a href="/tags/distributed/">distributed</a><small>2</small></li>
+  
+    <li><a href="/tags/game/">game</a><small>1</small></li>
+  
+    <li><a href="/tags/haskell/">haskell</a><small>2</small></li>
+  
+    <li><a href="/tags/javascript/">javascript</a><small>2</small></li>
+  
+    <li><a href="/tags/lambda-calculus/">lambda-calculus</a><small>2</small></li>
+  
+    <li><a href="/tags/logic/">logic</a><small>2</small></li>
+  
+    <li><a href="/tags/machine-learning/">machine learning</a><small>1</small></li>
+  
+    <li><a href="/tags/math/">math</a><small>3</small></li>
+  
+    <li><a href="/tags/ml/">ml</a><small>1</small></li>
+  
+    <li><a href="/tags/paper/">paper</a><small>2</small></li>
+  
+    <li><a href="/tags/philosophy/">philosophy</a><small>1</small></li>
+  
+    <li><a href="/tags/physics/">physics</a><small>2</small></li>
+  
+    <li><a href="/tags/scala/">scala</a><small>1</small></li>
+  
+    <li><a href="/tags/shell/">shell</a><small>1</small></li>
+  
+    <li><a href="/tags/spark/">spark</a><small>1</small></li>
+  
+    <li><a href="/tags/statistics/">statistics</a><small>3</small></li>
+  
+    <li><a href="/tags/theology/">theology</a><small>1</small></li>
+  
+    <li><a href="/tags/vim/">vim</a><small>2</small></li>
+  
+    <li><a href="/tags/vimperator/">vimperator</a><small>3</small></li>
+  
+    <li><a href="/tags/zsh/">zsh</a><small>1</small></li>
+  
+    <li><a href="/tags/ツッコミ/">ツッコミ</a><small>1</small></li>
+  
+    <li><a href="/tags/中二病/">中二病</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2017 Farseer He
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+<script type="text/javascript">
+var disqus_shortname = 'githubio';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+<!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+</body>
+</html>

@@ -61,6 +61,85 @@
     <header>
       
         <div class="icon"></div>
+        <time datetime="2015-08-15T16:00:00.000Z"><a href="/2015/08/16/svd-implementation-in-graphx/">2015-08-16</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2015/08/16/svd-implementation-in-graphx/">SVD++ Implementation in GraphX</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="Clarification"><a href="#Clarification" class="headerlink" title="Clarification"></a>Clarification</h2><p>写完之后我突然发现这个标题看上去貌似有“以下实现是由本人完成的”这样的误导，所以特此澄清，下文出现的代码统统摘自<br> <a href="https://github.com/apache/spark.git">apache/spark</a>.</p>
+<h2 id="SVD-Intro"><a href="#SVD-Intro" class="headerlink" title="SVD++ Intro"></a>SVD++ Intro</h2><p>首先简单介绍 SVD++ 算法在协同过滤中的应用及其数学直觉。</p>
+<h3 id="SVD-in-CF"><a href="#SVD-in-CF" class="headerlink" title="SVD in CF"></a>SVD in CF</h3><p>考虑 CF 中最为常见的用户给电影评分的场景，我们需要一个数学模型来模拟用户给电影打分的场景，i.e. 对评分进行预测。</p>
+<p>一个 Naive 的方案可以是将评分矩阵看作是两个矩阵的乘积：</p>
+<p>$$<br>U = \begin{bmatrix}<br>u_{11} &amp; \cdots &amp; u_{1k} \\<br>\vdots &amp; \ddots &amp; \vdots \\<br>u_{m1} &amp; \cdots &amp; u_{mk}<br>\end{bmatrix}<br>\begin{bmatrix}<br>i_{11} &amp; \cdots &amp; i_{1n} \\<br>\vdots &amp; \ddots &amp; \vdots \\<br>i_{k1} &amp; \cdots &amp; i_{kn}<br>\end{bmatrix}<br>$$.</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2015/08/16/svd-implementation-in-graphx/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-08-02T16:00:00.000Z"><a href="/2015/08/03/cps-and-monads/">2015-08-03</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2015/08/03/cps-and-monads/">CPS and Monads</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="Aha"><a href="#Aha" class="headerlink" title="Aha"></a>Aha</h2><p>最近搬了个地儿，离开了生活了近6年的合肥。呆在合肥的时候不觉得她有什么不好，现在想想空气质量是真不照；呆在合肥的时候不觉得她有什么好，现在想想吃饭是真便宜。</p>
+<p>总之就是这段时间一堆烂事，导致前边挖下的坑没能及时填上。另外，随着研究方向的逐渐明确，也许不能再写这些“不务正业”的玩意了，也许会写点跟方向相关的内容，虽然我觉得这个方向上的工作纯忽悠，完全不值一提。我就是一个始终觉得别人研究的东西无比高大上，自己手上的东西都是crap的人。</p>
+<h2 id="Useful-Monads-with-Interpretor"><a href="#Useful-Monads-with-Interpretor" class="headerlink" title="Useful Monads with Interpretor"></a>Useful Monads with Interpretor</h2><p>上一篇结尾提到的那篇论文总算是看完了。既然不能完全消化，吸收，然后拉出屎来；那么我就简单粗暴地吞下去，嚼一嚼，吐出来好了（美其名曰翻译+注释）。</p>
+<p>论文很长，肯定不能逐字翻，我主要关心的是第三章，但是直接跳过前边又不行，所以先简单节选些第二章的内容。</p>
+      
+    </div>
+    <footer>
+      
+        
+          <div class="alignleft">
+            <a href="/2015/08/03/cps-and-monads/#more" class="more-link">Read More</a>
+          </div>
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
         <time datetime="2015-07-08T16:00:00.000Z"><a href="/2015/07/09/monads-in-category-theory-and-monads-in-haskell/">2015-07-09</a></time>
       
       
@@ -362,85 +441,13 @@
 
 
 
-  <article class="post">
-  
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2015-02-03T16:00:00.000Z"><a href="/2015/02/04/vimperator-tips-2/">2015-02-04</a></time>
-      
-      
-  
-    <h1 class="title"><a href="/2015/02/04/vimperator-tips-2/">Vimperator tips 2</a></h1>
-  
-
-    </header>
-    <div class="entry">
-      
-        <h2 id="Ver-3-8-3-release-gi触发错误"><a href="#Ver-3-8-3-release-gi触发错误" class="headerlink" title="Ver 3.8.3 (release) gi触发错误"></a>Ver 3.8.3 (release) gi触发错误</h2><p>按键gi的作用是focus到当前页面的input/textarea/iframe，即进入类似vim中的input模式。<br>在该版本中概率出错(xpath相关，具体记不得了)。<br>解决办法很简单，安装<a href="https://github.com/vimperator/vimperator-labs">git版本</a>就可以了。<br>刚开始看vimperator的源码，尚且不熟悉架构，但是buffer相关的默认按键执行的操作可以在<br><code>/common/content/buffer.js</code>中找到。概述信息可以通过mappings module获取，通过<br><code>:echo mappings.get(0, &#39;gi&#39;, &#39;.*&#39;)</code></p>
-      
-    </div>
-    <footer>
-      
-        
-          <div class="alignleft">
-            <a href="/2015/02/04/vimperator-tips-2/#more" class="more-link">Read More</a>
-          </div>
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-  <article class="post">
-  
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2015-01-26T16:00:00.000Z"><a href="/2015/01/27/vimperator-tips/">2015-01-27</a></time>
-      
-      
-  
-    <h1 class="title"><a href="/2015/01/27/vimperator-tips/">Vimperator tips</a></h1>
-  
-
-    </header>
-    <div class="entry">
-      
-        <h2 id="vimperator是什么鬼？"><a href="#vimperator是什么鬼？" class="headerlink" title="vimperator是什么鬼？"></a>vimperator是什么鬼？</h2><p>对于找到这的人来说，这是个无聊的问题，没办法，好久没写东西了，缺乏基本的文字内容组织能力，<br>只好遵循渐进的法则…</p>
-<p>vimperator 是一个firefox扩展，有很强的可定制性，很好玩，神器，以上。<br>类似的东西有<a href="http://5digits.org/pentadactyl/">Pentadactyl</a>(不支持最新的ff),<a href="https://github.com/akhodakivskiy/VimFx">VimFx</a>(功能比较简单)。</p>
-<p>好吧，接下来我分享一些vimperator的<a href="https://github.com/blindFS/dotfiles/blob/master/.vimperatorrc">配置</a>。</p>
-      
-    </div>
-    <footer>
-      
-        
-          <div class="alignleft">
-            <a href="/2015/01/27/vimperator-tips/#more" class="more-link">Read More</a>
-          </div>
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
 
 <nav id="pagination">
   
     <a href="/" class="alignleft prev">Prev</a>
   
+  
+    <a href="/page/3/" class="alignright next">Next</a>
   
   <div class="clearfix"></div>
 </nav></div></div>
@@ -486,6 +493,8 @@
   
     <li><a href="/tags/Information-theory/">Information theory</a><small>2</small></li>
   
+    <li><a href="/tags/Physics/">Physics</a><small>0</small></li>
+  
     <li><a href="/tags/art/">art</a><small>1</small></li>
   
     <li><a href="/tags/distributed/">distributed</a><small>2</small></li>
@@ -508,7 +517,9 @@
   
     <li><a href="/tags/paper/">paper</a><small>2</small></li>
   
-    <li><a href="/tags/physics/">physics</a><small>1</small></li>
+    <li><a href="/tags/philosophy/">philosophy</a><small>1</small></li>
+  
+    <li><a href="/tags/physics/">physics</a><small>2</small></li>
   
     <li><a href="/tags/scala/">scala</a><small>1</small></li>
   
@@ -517,6 +528,8 @@
     <li><a href="/tags/spark/">spark</a><small>1</small></li>
   
     <li><a href="/tags/statistics/">statistics</a><small>3</small></li>
+  
+    <li><a href="/tags/theology/">theology</a><small>1</small></li>
   
     <li><a href="/tags/vim/">vim</a><small>2</small></li>
   
