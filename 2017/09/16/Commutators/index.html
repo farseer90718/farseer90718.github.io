@@ -12,7 +12,7 @@ Each observable is associated with an Hermitian operator of a Hilbert space H. I
 Upon observation, one of the eigenvalues will be the quantity and the wave function will collapse onto one of the corresponding eigenstates.
 
 Here I don’t want to discuss the deep insights, which I have no idea of. That’s why I take Copenhagen interpretation, so shut up and compute!
-This article is written as a note of my understanding of physical and mathematical meaning of commutators, mainly the answer to the question: “why do commute operators have a common set of eigenstates ?”">
+This article is written as a note of my understanding of physical and mathematical meaning of commutators, mainly the answer to the question: “why do commute operators have a common set of eigenstates?”">
   
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -84,26 +84,34 @@ This article is written as a note of my understanding of physical and mathematic
 <li>Upon observation, one of the eigenvalues will be the quantity and the wave function will collapse onto one of the corresponding eigenstates.</li>
 </ol>
 <p>Here I don’t want to discuss the deep insights, which I have no idea of. That’s why I take <a href="https://en.wikipedia.org/wiki/Copenhagen_interpretation" target="_blank" rel="external">Copenhagen interpretation</a>, so shut up and compute!</p>
-<p>This article is written as a note of my understanding of physical and mathematical meaning of commutators, mainly the answer to the question: “why do commute operators have a common set of eigenstates ?”</p>
+<p>This article is written as a note of my understanding of physical and mathematical meaning of commutators, mainly the answer to the question: “why do commute operators have a common set of eigenstates?”</p>
 <a id="more"></a>
 <h2 id="Definition"><a href="#Definition" class="headerlink" title="Definition"></a>Definition</h2><ul>
 <li>Suppose $\hat{A}, \hat{B}$ are operators of $H \to H$</li>
 <li>Then the commutator of them are defined as $[\hat{A}, \hat{B}] \equiv \hat{A}\hat{B} - \hat{B}\hat{A}$ is also an operator of $H \to H$</li>
 <li>We are particularly interested in observables, so without further specification, we assume the operators mentioned below are Hermitian.</li>
 </ul>
-<h2 id="Uncertainty-Principle"><a href="#Uncertainty-Principle" class="headerlink" title="Uncertainty Principle"></a>Uncertainty Principle</h2><p>The most famous pair of operators might be position op $\hat{x}$ and momentum op $\hat{p} = -i\hbar\partial_x$ (1-d case), we can easily compute their commutator $[\hat{x} , \hat{p}] = i\hbar$. It’s a constant operator. The physical interpretation of this is “position and momentum of the same direction can’t be observed simultaneously”:</p>
+<h2 id="Uncertainty-Principle"><a href="#Uncertainty-Principle" class="headerlink" title="Uncertainty Principle"></a>Uncertainty Principle</h2><p>The most famous pair of operators might be position op $\hat{X}$ and momentum op $\hat{P} = -i\hbar\partial_x$ (1-d case, <a href="https://en.wikipedia.org/wiki/Position_and_momentum_space#Functions_and_operators_in_position_space" target="_blank" rel="external">position space</a>). Before the easy algebra, it really bothers me to ponder on their domains and codomains:</p>
 <ol>
-<li>Position x is observed iff the wave function collapses onto an eigenstate of $\hat{x}$</li>
-<li>Suppose both quantities are measured, then there must be a shared eigenstate $\Phi_{x,p}(x)$ for the collapsed wave function to reside in. We denote its eigenvalues as $x_0, p_0$.</li>
-<li>Contradiction occurs<br>$$<br>i \hbar \Phi_{x,p} = [\hat{x}, \hat{p}] \Phi_{x,p} = x_0 p_0 \Phi_{x,p} - x_0 p_0 \Phi_{x,p} = 0<br>$$</li>
+<li>Consider the simplified case (more general ones are similar) where position x makes up the whole <a href="https://en.wikipedia.org/wiki/Wave_function#Representations" target="_blank" rel="external">representation</a> of our system.</li>
+<li>Can H be <a href="https://en.wikipedia.org/wiki/Lp_space#Hilbert_spaces" target="_blank" rel="external">$L^2(x)$</a>? Well, it seems problematic. $\hat{X} \psi(x)$ might not be normalizable. Technically for meaningful wave functions, the domain of $\hat{X}$ is $D(\hat{X}) = \{\psi \in L^2(x) \,|\, \hat{X} \psi \in L^2(x) \}$ and the codomain $L^2(x)$ is not the same. Similarly, for $\hat{P}$, the partial derivative of a differentiable can be indifferentiable.</li>
+<li>Things won’t help if we try to define the operators over a broader function space, for example, $\mathbb{C}^{\mathbb{R}}$. The basis property of eigenstates $\delta(x - x_0)$ still holds and $\hat{X}$ seems to make sense. However the eigenstates of $\hat{P}$, namely the <a href="https://en.wikipedia.org/wiki/Basis_function#Fourier_basis" target="_blank" rel="external">Fourier basis</a> only span the space of square-integrable functions, i.e. $L^2(x)$.</li>
+<li>The trick is to add delicate restrictions to $L^2(x)$, such that the wave functions become realistic. Here we force the wave functions of H to be $\in L^2(x)$, <a href="https://en.wikipedia.org/wiki/Smoothness" target="_blank" rel="external">$\in C^{\infty}$</a> and with <a href="https://en.wikipedia.org/wiki/Support_(mathematics)#Compact_support" target="_blank" rel="external">compact supports</a>.</li>
+<li>It’s easy to verify that $H \subset D(\hat{X}) \cap D(\hat{P})$ and $\forall \psi(x) \in H, \hat{X}\psi(x) \in H \land \hat{P}\psi(x) \in H$. Finally we get a suitable function space for the commutator.</li>
+</ol>
+<p>Now we have $[\hat{X} , \hat{P}] = i\hbar$, which is a constant operator. The physical interpretation of this is “position and momentum of the same direction can’t be observed simultaneously”:</p>
+<ol>
+<li>Position x is observed iff the wave function collapses onto an eigenstate of $\hat{X}$</li>
+<li>Suppose both quantities are measured, then there must be a shared eigenstate $\Phi_{x,p}(x)$ for the collapsed wave function to reside in. We denote its eigenvalues as $x, p$.</li>
+<li>Contradiction occurs<br>$$<br>i \hbar \Phi_{x,p} = [\hat{X}, \hat{P}] \Phi_{x,p} = x p \Phi_{x,p} - x p \Phi_{x,p} = 0<br>$$</li>
 <li>No such none zero wave function to hold the equation, hypotheses objected.</li>
 </ol>
 <p>Mathematically, we can apply the Cauchy-Schwarz inequality to <a href="https://en.wikipedia.org/wiki/Uncertainty_principle#Robertson.E2.80.93Schr.C3.B6dinger_uncertainty_relations" target="_blank" rel="external">prove</a> the Robertson uncertainty relation:</p>
 <p>$$<br>{\displaystyle \sigma_{A}\sigma_{B}\geq \left|{\frac {1}{2i}}\langle [{\hat {A}},{\hat {B}}]\rangle \right|={\frac {1}{2}}\left|\langle [{\hat {A}},{\hat {B}}]\rangle \right|}<br>$$</p>
-<p>When it comes to the case of position and momentum, we get the very “uncertainty principle” written on high-school physics textbook.</p>
-<h2 id="Commute-Operators"><a href="#Commute-Operators" class="headerlink" title="Commute Operators"></a>Commute Operators</h2><p>The real problem is, what happens when two operators always commute ? i.e. $[\hat{A}, \hat{B}] = 0$. By definition we can easily derive:</p>
-<p>Prop 1. $\forall \Phi_a(x) s.t. \hat{A}\Phi_a(x) = a \Phi_a(x), \hat{A}(\hat{B}\Phi_a(x)) = a \hat{B}\Phi_a(x)$, $\hat{B}$ act on any eigenstate of $\hat{A}$ yields another (might be the same) eigenstate of A, with the same eigenvalue.<br>Prop 2. Vice versa.<br>Prop 3. If a is an none-degenerate eigenvalue of $\hat{A}$, i.e. only one normalized eigenstate $\Phi_a(x)$. According to Prop 1, $\hat{B} \Phi_a(x)$ must be proportional to $\Phi_a(x)$, i.e. $\Phi_a(x)$ is also an eigenstate of $\hat{B}$.</p>
-<p>We have shown that any none-degenerate eigenstate of $\hat{A}$ is a shared eigenstate. In order to prove the assertion “commute operators have a common set of eigenstates”, by symmetry, we only need to show that “for any degenerate eigenvalue a of $\hat{A}$, there are shared eigenstates, the span of which covers all the eigenstates of a”.</p>
+<p>When it comes to the case of position and momentum, we get the very “Heisenberg uncertainty principle” written on high-school physics textbooks.</p>
+<h2 id="Commute-Operators"><a href="#Commute-Operators" class="headerlink" title="Commute Operators"></a>Commute Operators</h2><p>The real problem is, what happens when two operators always commute? i.e. $[\hat{A}, \hat{B}] = 0$. By definition we can easily derive:</p>
+<p>Prop 1. $\forall \Phi_a(x) s.t. \hat{A}\Phi_a(x) = a \Phi_a(x), \hat{A}(\hat{B}\Phi_a(x)) = a \hat{B}\Phi_a(x)$, $\hat{B}$ acts on any eigenstate of $\hat{A}$ yields another (might be the same) eigenstate of A, with the same eigenvalue.<br>Prop 2. Vice versa.<br>Prop 3. If a is an none-degenerate eigenvalue of $\hat{A}$, i.e. only one normalized eigenstate $\Phi_a(x)$. According to Prop 1, $\hat{B} \Phi_a(x)$ must be proportional to $\Phi_a(x)$, i.e. $\Phi_a(x)$ is also an eigenstate of $\hat{B}$.</p>
+<p>We have shown that any none-degenerate eigenstate of $\hat{A}$ is a shared eigenstate. In order to prove <a href="https://en.wikipedia.org/wiki/Complete_set_of_commuting_observables#The_Compatibility_Theorem" target="_blank" rel="external">the compatibility theorem</a>: “commute operators possess a complete set of common eigenstates”, by symmetry, we only need to show that “for any degenerate eigenvalue a of $\hat{A}$, there are shared eigenstates, the span of which covers all the eigenstates of a”.</p>
 <ol>
 <li>Both operations are Hermitian, thus linear. All eigenstates of a forms a linear subspace (here for simplicity, consider only finite-dimensional case) $H_a$ of $H$.</li>
 <li>For any eigenstate $\Phi_b(x)$ of $\hat{B}$, project it onto both $H_a$ and its orthogonal complement $H_c$: $\Phi_b(x) = \beta_a + \beta_c$.</li>
@@ -112,11 +120,13 @@ This article is written as a note of my understanding of physical and mathematic
 <li>Consider a certain set of basis $S_B$ of $H$ constituted by eigenstates of $\hat{B}$, their $\beta_a$ components are orthogonal, and none-zero parts of them should form a complete set of basis of $H_a$. Otherwise their span won’t cover the whole space.</li>
 <li>Choose the none-zero $\beta_a$ parts, and for the rest, change the eigenstates to their $\beta_c$ components. A new set of basis with shared eigenstates across $H_a$ is formed.</li>
 </ol>
-<p>So far, we have not only proved the assertion but also come up with a way to actually construct the common basis. Happy ending!</p>
+<p>So far, we have not only proved the assertion but also come up with a way to actually construct the common basis. For infinite-dimensional cases, things become much trickier, but the basic intuitions are similar. To see this, imagine the commutator $[\hat{X}, \hat{Y}] = 0$ of 3-d position operators.</p>
+<p>Physically, if two observables commute, the observation of one is independent of the other. It means their information is additive and neither of them is enough to describe the nature. No wonder system states are specified by <a href="https://en.wikipedia.org/wiki/Complete_set_of_commuting_observables" target="_blank" rel="external">CSCO</a>.</p>
 <h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><ul>
 <li><a href="https://www.eng.famu.fsu.edu/~dommelen/quantum/style_a/nt_diag.html" target="_blank" rel="external">https://www.eng.famu.fsu.edu/~dommelen/quantum/style_a/nt_diag.html</a></li>
 <li><a href="https://en.wikipedia.org/wiki/Wave_function" target="_blank" rel="external">Wave function</a></li>
 <li><a href="https://en.wikipedia.org/wiki/Wave_function#Wave_functions_and_function_spaces" target="_blank" rel="external">Wave function space</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Position_operator" target="_blank" rel="external">Position operator</a></li>
 </ul>
 
       
@@ -203,8 +213,6 @@ This article is written as a note of my understanding of physical and mathematic
     <li><a href="/tags/EVA/">EVA</a><small>1</small></li>
   
     <li><a href="/tags/Information-theory/">Information theory</a><small>2</small></li>
-  
-    <li><a href="/tags/Physics/">Physics</a><small>0</small></li>
   
     <li><a href="/tags/art/">art</a><small>1</small></li>
   
